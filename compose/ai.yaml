@@ -1,0 +1,25 @@
+---
+
+services:
+  ollama:
+    image: ollama/ollama:0.13.3@sha256:6c76395793f40a5e78f120e880ca82c67e39eb908ad90eee8ce755535529d0ec
+    container_name: ollama
+    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_NUM_THREADS=2
+      - OLLAMA_KEEP_ALIVE=0
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    volumes:
+      # Persistent storage for downloaded models
+      - ${INSTALL_DIRECTORY}/config/ollama:/root/.ollama
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.50 # Fixed IP for stability

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
+  "timezone": "Europe/Paris",
+  "labels": ["dependencies"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^compose/.+\\.ya?ml$"],
+      "matchStrings": [
+        "image:\\s*['\"]?(?<depName>[^:'\"\\s@]+)(?::(?<currentValue>[^'\"\\s@]+))?(?:@(?<currentDigest>sha256:[a-f0-9]+))?['\"]?"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Fix LinuxServer.io qBittorrent version confusion (ignore year-based tags like 20.x)",
+      "matchPackageNames": [
+        "lscr.io/linuxserver/qbittorrent",
+        "linuxserver/qbittorrent"
+      ],
+      "allowedVersions": "<= 10.0.0"
+    },
+    {
+      "description": "Group pins and digests separately",
+      "matchUpdateTypes": ["pin", "digest"],
+      "groupName": "pinned dependencies",
+      "automerge": true
+    },
+    {
+      "description": "Auto-merge stable patch updates",
+      "matchUpdateTypes": ["patch"],
+      "matchDatasources": ["docker"],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ]
+}

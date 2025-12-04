@@ -1,0 +1,16 @@
+---
+repos:
+  - repo: local
+    hooks:
+      - id: yamllint
+        name: YAML Lint
+        entry: yamllint
+        language: system
+        exclude: ^config/
+        files: .+\.ya?ml$
+      - id: yamlfmt
+        name: YAML Format
+        entry: yamlfmt
+        language: system
+        exclude: ^config/
+        files: .+\.ya?ml$

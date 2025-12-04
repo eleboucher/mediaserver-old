@@ -1,0 +1,21 @@
+---
+
+networks:
+  yams_network:
+    name: yams_network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  homelab:
+    driver: macvlan
+    driver_opts:
+      parent: enp1s0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.254
+          ip_range: 192.168.1.53/32
+
+volumes:
+  tmp_qbittorrent_data: {}
+  tmp_incomplete_data: {}

@@ -1,0 +1,133 @@
+---
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.16.2944-ls299@sha256:60e5edcac39172294ad22d55d1b08c2c0a9fe658cad2f2c4d742ae017d7874de
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/sonarr:/config
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.13
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:6.0.4.10291-ls288@sha256:06ac318ecb95a34c7b229568dcb4271f02cb5007bb189a0dd67a2032864187ca
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/radarr:/config
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.14
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:v1.5.3-ls325@sha256:2be164c02c0bb311b6c32e57d3d0ddc2813d524e89ab51a3408c1bf6fafecda5
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/bazarr:/config
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.16
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.tls.certresolver=myresolver"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+
+  profilarr:
+    image: santiagosayshey/profilarr:beta@sha256:864486f403195b2ae3277335ac46457db587de983c5a1814c93bb384a0d3252c
+    container_name: profilarr
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/profilarr:/config
+    ports:
+      - 6868:6868
+    environment:
+      - TZ=Europe/Paris
+    networks:
+      yams_network:
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.profilarr.rule=Host(`profilarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.profilarr.entrypoints=websecure"
+      - "traefik.http.routers.profilarr.tls.certresolver=myresolver"
+      - "traefik.http.services.profilarr.loadbalancer.server.port=6868"
+
+  # Prowlarr is our torrent indexer/searcher. Sonarr/Radarr use Prowlarr as a source
+  # https://prowlarr.com/
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls133@sha256:475853535de3de8441b87c1457c30f2e695f4831228b12b6b7274e9da409d874
+    container_name: prowlarr
+    ports:
+      - 9696:9696
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${INSTALL_DIRECTORY}/config/prowlarr:/config
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.17
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls.certresolver=myresolver"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6@sha256:7962759d99d7e125e108e0f5e7f3cdbcd36161776d058d1d9b7153b92ef1af9e
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_FILE=${LOG_FILE:-none}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/London
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/flaresolver:/config
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.26
