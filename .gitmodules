@@ -1,0 +1,3 @@
+[submodule "ha-linky"]
+	path = ha-linky
+	url = git@github.com:bokub/ha-linky.git
