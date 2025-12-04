@@ -1,0 +1,61 @@
+- id: '1763818166935'
+  alias: Living room is cold
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.h5075_c14b_temperature
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    below: 18
+  conditions: []
+  actions:
+  - action: notify.notify
+    metadata: {}
+    data:
+      message: 'Living room is cold '
+  mode: single
+- id: '1763933287069'
+  alias: Bedroom is cold
+  description: ''
+  triggers:
+  - trigger: numeric_state
+    entity_id:
+    - sensor.h5075_9d45_temperature
+    for:
+      hours: 0
+      minutes: 30
+      seconds: 0
+    below: 18
+  conditions: []
+  actions:
+  - action: notify.notify
+    metadata: {}
+    data:
+      message: 'Living room is cold '
+  mode: single
+- id: '1764183571541'
+  alias: 'Kettle: Update Wake-up Schedule'
+  description: Sets the Stagg EKG schedule time every evening for the following morning.
+  triggers:
+  - at: '20:00:00'
+    trigger: time
+  actions:
+  - target:
+      entity_id: time.stagg_schedule_time
+    data:
+      time: "{% set day = now().weekday() %} {# Note: 0=Mon, 1=Tue, 2=Wed, 3=Thu,
+        4=Fri, 5=Sat, 6=Sun #}\n{# If Today is Mon (0) -> Tomorrow is Tue (8am) #}
+        {% if day == 0 %} \n  08:00:00\n\n{# If Today is Fri (4) or Sat (5) -> Tomorrow
+        is Weekend (11am) #} {% elif day in [4, 5] %} \n  11:00:00\n\n{# All other
+        days (Sun, Tue, Wed, Thu) -> Tomorrow is standard (9am) #} {% else %} \n  09:00:00\n{%
+        endif %}\n"
+    action: time.set_value
+  - target:
+      entity_id: select.stagg_schedule_mode
+    data:
+      option: Daily
+    action: select.select_option
+  mode: single

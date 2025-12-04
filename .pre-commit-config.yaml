@@ -1,0 +1,23 @@
+repos:
+  - repo: local
+    hooks:
+      - id: sops-encrypt
+        name: SOPS Auto-Encryption
+        # This script checks for "stringData" (unencrypted) in .sops.yaml files.
+        # If found, it runs sops --encrypt --in-place.
+        # It fails the commit if changes were made, forcing you to stage the encrypted file.
+        entry: bash -c '
+          failed=0;
+          for file in "$@"; do
+            if grep -q "stringData" "$file"; then
+              sops --encrypt --in-place "$file";
+              echo "🔐 Encrypted $file";
+              failed=1;
+            fi;
+          done;
+          if [ $failed -eq 1 ]; then
+            echo "⚠️  Files were encrypted. Please run \"git add\" on them and commit again.";
+            exit 1;
+          fi' --
+        language: system
+        files: .+\.sops\.yaml$
