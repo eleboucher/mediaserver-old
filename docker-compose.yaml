@@ -32,12 +32,30 @@ services:
     networks:
       - yams_network
 
-
-
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:v2025.11.3
+    ports:
+      - 5690:5690
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/wizarr:/data
+    environment:
+      - PUID=${PUID} #Set UID
+      - PGID=${PGID} #Set GID
+      - DISABLE_BUILTIN_AUTH=false #Set to true ONLY if you are using another auth provider (Authelia, Authentik, etc)
+      - TZ=${TZ} #Set your timezone here
+    networks:
+      - yams_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wizarr.rule=Host(`wizarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.wizarr.entrypoints=websecure"
+      - "traefik.http.routers.wizarr.tls.certresolver=myresolver"
+      - "traefik.http.services.wizarr.loadbalancer.server.port=5690"
   # jellyfin is used to serve your media to the client devices
   jellyfin:
-    image: lscr.io/linuxserver/${MEDIA_SERVICE}
-    container_name: ${MEDIA_SERVICE}
+    image: lscr.io/linuxserver/jellyfin:10.11.4ubu2404-ls10
+    container_name: jellyfin
     group_add:
       - '992'
     environment:
@@ -76,6 +94,7 @@ services:
       - 8388:8388/udp  #Shadowsocks
       - 8003:8000/tcp  #Admin
       - 8081:8081/tcp  #gluetun
+      - 8082:8080/tcp  #gluetun
     environment:
       - VPN_SERVICE_PROVIDER=${VPN_SERVICE}
       - VPN_TYPE=wireguard
@@ -95,7 +114,28 @@ services:
       - "traefik.http.routers.qbit.rule=Host(`qbit.erwanleboucher.dev`)"
       - "traefik.http.routers.qbit.entrypoints=websecure"
       - "traefik.http.routers.qbit.tls.certresolver=myresolver"
+      - "traefik.http.routers.qbit.service=qbit"
       - "traefik.http.services.qbit.loadbalancer.server.port=8081"
+      # Note: Traefik talks to Gluetun, which forwards to sabnzbd
+      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.erwanleboucher.dev`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
+      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
+      - "traefik.http.routers.sabnzbd.service=sabnzbd"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:4.5.5-ls238
+    container_name: sabnzbd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/Paris
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/sabnzbd:/config
+    restart: unless-stopped
+    network_mode: "service:gluetun"
 
   # qBitorrent is used to download torrents
   qbittorrent:
@@ -116,7 +156,7 @@ services:
   # Sonarr is used to query, add downloads to the download queue and index TV shows
   # https://sonarr.tv/
   sonarr:
-    image: lscr.io/linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr:4.0.16.2944-ls299
     container_name: sonarr
     environment:
       - PUID=${PUID}
@@ -138,7 +178,8 @@ services:
       - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
   jellysearch:
-    image: domistyle/jellysearch
+    image: domistyle/jellysearch:latest
+    container_name: jellysearch
     restart: unless-stopped
     volumes:
       - ${INSTALL_DIRECTORY}/config/jellyfin/data:/config:ro
@@ -172,7 +213,7 @@ services:
   # Radarr is used to query, add downloads to the download queue and index Movies
   # https://radarr.video/
   radarr:
-    image: lscr.io/linuxserver/radarr
+    image: lscr.io/linuxserver/radarr:6.0.4.10291-ls288
     container_name: radarr
     environment:
       - PUID=${PUID}
@@ -194,11 +235,31 @@ services:
       - "traefik.http.routers.radarr.tls.certresolver=myresolver"
       - "traefik.http.services.radarr.loadbalancer.server.port=7878"
 
-
+  autobrr:
+    container_name: autobrr
+    image: ghcr.io/autobrr/autobrr:v1.70
+    restart: unless-stopped
+    ports:
+      - 7474:7474
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.24
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/autobrr:/config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.autobrr.rule=Host(`autobrr.erwanleboucher.dev`)"
+      - "traefik.http.routers.autobrr.entrypoints=websecure"
+      - "traefik.http.routers.autobrr.tls.certresolver=myresolver"
+      - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
   # Bazarr is used to download and categorize subtitles
   # https://www.bazarr.media/
   bazarr:
-    image: lscr.io/linuxserver/bazarr
+    image: lscr.io/linuxserver/bazarr:v1.5.3-ls325
     container_name: bazarr
     environment:
       - PUID=${PUID}
@@ -220,7 +281,7 @@ services:
       - "traefik.http.routers.bazarr.tls.certresolver=myresolver"
       - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
   profilarr:
-    image: santiagosayshey/profilarr:latest
+    image: santiagosayshey/profilarr:beta
     container_name: profilarr
     volumes:
         - ${INSTALL_DIRECTORY}/config/profilarr:/config # Replace with your actual path
@@ -233,12 +294,29 @@ services:
       - "traefik.http.routers.profilarr.entrypoints=websecure"
       - "traefik.http.routers.profilarr.tls.certresolver=myresolver"
       - "traefik.http.services.profilarr.loadbalancer.server.port=6868"
-
+  qbitmanage:
+    container_name: qbitmanage
+    image: ghcr.io/stuffanthings/qbit_manage:v4.6.5
+    volumes:
+      - ${MEDIA_DIRECTORY}:/data # give qBitManage access to our torrents
+      - ${INSTALL_DIRECTORY}/config/qbitmanage:/config # mount our config file (we will create next) into the container
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - QBIT_USER=${QBIT_USER} # allow qBitManage to communicate with qBitTorrent's API
+      - QBIT_PASS=${QBIT_PASS}
+      - QBT_WEB_SERVER=false # disable the web UI and API. We can manage this with just a config file!
+      - QBT_CONFIG_DIR=/config # Ensure qBitManage can find our mounted config file
+      - QBT_SCHEDULE=180 # run the process every 180 minutes
+      - QBT_STARTUP_DELAY=15 # wait 15 seconds after startup before running, to ensure qBitTorrent is up as well!s
+      - QBT_TAG_NOHARDLINKS=true # tag files without hardlinks
+      - QBT_SHARE_LIMITS=true # apply share limits to files without hardlinks
+      - QBT_DRY_RUN=false
 
   # Prowlarr is our torrent indexer/searcher. Sonarr/Radarr use Prowlarr as a source
   # https://prowlarr.com/
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr
+    image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls133
     container_name: prowlarr
     ports:
        - 9696:9696
@@ -263,10 +341,12 @@ services:
       - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
 
   jellyseerr:
-    image: ghcr.io/fallenbagel/jellyseerr:latest
+    image: seerr/seerr:develop
     init: true
     container_name: jellyseerr
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
       - LOG_LEVEL=debug
       - TZ=Europe/Paris
     ports:
@@ -292,7 +372,7 @@ services:
 
   flaresolverr:
     # DockerHub mirror flaresolverr/flaresolverr:latest
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
     container_name: flaresolverr
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
@@ -311,7 +391,7 @@ services:
       - 1.0.0.1
 
   tunnel:
-    image: cloudflare/cloudflared:latest
+    image: cloudflare/cloudflared:2025.11.1
     container_name: cloudflared
     restart: unless-stopped
     command: tunnel run
@@ -322,7 +402,7 @@ services:
 
   homeassistant:
     container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:stable"
+    image: "ghcr.io/home-assistant/home-assistant:2025.11.3"
     volumes:
       - ./config/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
@@ -342,10 +422,16 @@ services:
       TZ: Europe/Paris
 
   ha-linky:
-    image: ha-linky
+    build:
+      context: ./ha-linky
+      dockerfile: standalone.Dockerfile
+    container_name: ha-linky
+    depends_on:
+      - homeassistant
+    restart: unless-stopped
     environment:
       - SUPERVISOR_TOKEN=${SUPERVISOR_TOKEN}
-      - WS_URL=ws://home.erwanleboucher.dev:8123/api/websocket
+      - WS_URL=ws://192.168.1.40:8123/api/websocket
       - TZ=Europe/Paris
     volumes:
       - ${INSTALL_DIRECTORY}/config/ha-linky:/data
@@ -354,28 +440,39 @@ services:
         ipv4_address: 172.20.0.27
 
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.13.0
     container_name: ollama
     restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_NUM_THREADS=2
+      - OLLAMA_KEEP_ALIVE=0
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
     volumes:
       # Persistent storage for downloaded models
       - ${INSTALL_DIRECTORY}/config/ollama:/root/.ollama
     networks:
       yams_network:
         ipv4_address: 172.20.0.50 # Fixed IP for stability
-    # No ports exposed to host needed (WebUI talks to it via internal network)
 
   # Open WebUI: The ChatGPT-like Interface
   open-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:v0.6.40
     container_name: open-webui
     restart: unless-stopped
+
     volumes:
       - ${INSTALL_DIRECTORY}/config/open-webui:/app/backend/data
     environment:
       # Connects to the Ollama container internally
       - OLLAMA_BASE_URL=http://ollama:11434
-      # Optional: Disable sign-up if you want to be the only user
       - WEBUI_AUTH=true
     networks:
       yams_network:
@@ -389,7 +486,7 @@ services:
       - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
   # Portainer helps debugging and monitors the containers
   portainer:
-    image: portainer/portainer-ce
+    image: portainer/portainer-ce:2.33.5-alpine
     container_name: portainer
     ports:
       - 9000:9000
@@ -408,7 +505,7 @@ services:
       - "traefik.http.routers.portainer.tls.certresolver=myresolver"
       - "traefik.http.services.portainer.loadbalancer.server.port=9000"
   beszel:
-    image: 'henrygd/beszel'
+    image: 'henrygd/beszel:0.16'
     container_name: beszel
     restart: unless-stopped
     networks:
@@ -427,7 +524,7 @@ services:
       - "traefik.http.services.beszel.loadbalancer.server.port=8090"
 
   beszel-agent:
-    image: henrygd/beszel-agent-intel
+    image: henrygd/beszel-agent-intel:0.16
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
@@ -474,7 +571,7 @@ services:
       retries: 10
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    image: docker.n8n.io/n8nio/n8n:1.123.0
     restart: always
     environment:
       - DB_TYPE=postgresdb
@@ -504,10 +601,14 @@ services:
 
   # Watchtower is going to keep our instances updated
   watchtower:
-    image: nickfedor/watchtower
+    image: nickfedor/watchtower:1.12.3
     container_name: watchtower
     environment:
       - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * * # Check daily at 4am
+      - WATCHTOWER_MONITOR_ONLY=true
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=discord://ittcuGYpRo6XP1SyEYZhWv6VUp6AZjtrmu3V_dIUQ9Bp4OqOIAbBPmDyjNh-aLgR7Uvh@1445142964794953910
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
