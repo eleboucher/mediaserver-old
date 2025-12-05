@@ -269,6 +269,9 @@ services:
       interval: 15s
       retries: 3
     restart: unless-stopped
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
     networks:
       yams_network:
         ipv4_address: 172.20.0.25
@@ -510,6 +513,7 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/24
+
   default:
     external: true
     name: yams_network
