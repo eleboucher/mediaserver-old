@@ -99,21 +99,6 @@ spec:
               limits:
                 cpu: 500m
                 memory: 512Mi
-
-          port-forward:
-            dependsOn: gluetun
-            image:
-              repository: docker.io/snoringdragon/gluetun-sabnzbd-port-manager
-              tag: "1.0"
-            env:
-              - name: QBITTORRENT_SERVER
-                value: localhost
-              - name: QBITTORRENT_PORT
-                value: "8080"
-
-              - name: PORT_FORWARDED
-                value: "/tmp/gluetun/forwarded_port"
-          # qBittorrent application container
           app:
             image:
               repository: lscr.io/linuxserver/sabnzbd
