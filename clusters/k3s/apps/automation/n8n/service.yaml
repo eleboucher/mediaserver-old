@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: docker-services
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5678
+    targetPort: 5678
+    protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: n8n
+  namespace: docker-services
+subsets:
+- addresses:
+  - ip: 192.168.1.40
+  ports:
+  - port: 5678
+---

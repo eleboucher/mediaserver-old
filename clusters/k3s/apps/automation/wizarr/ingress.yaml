@@ -1,0 +1,25 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wizarr
+  namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: traefik
+  tls:
+  - hosts:
+    - wizarr.erwanleboucher.dev
+    secretName: wizarr-tls
+  rules:
+  - host: wizarr.erwanleboucher.dev
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wizarr
+            port:
+              number: 5690
