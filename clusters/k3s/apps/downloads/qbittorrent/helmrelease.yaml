@@ -1,0 +1,208 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: qbittorrent
+  namespace: downloads
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: "3.6.0"
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      qbittorrent:
+        type: deployment
+        replicas: 1
+
+        containers:
+          # Gluetun VPN container (network provider)
+          gluetun:
+            image:
+              repository: qmcgaw/gluetun
+              tag: v3.40.3
+
+            securityContext:
+              capabilities:
+                add:
+                  - NET_ADMIN
+                  - NET_RAW
+
+            env:
+              - name: VPN_SERVICE_PROVIDER
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_SERVICE_PROVIDER
+              - name: VPN_TYPE
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_TYPE
+              - name: WIREGUARD_PRIVATE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: WIREGUARD_PRIVATE_KEY
+              - name: VPN_PORT_FORWARDING
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_PORT_FORWARDING
+              - name: VPN_PORT_FORWARDING_PROVIDER
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_PORT_FORWARDING_PROVIDER
+              - name: PORT_FORWARD_ONLY
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: PORT_FORWARD_ONLY
+              - name: FIREWALL_OUTBOUND_SUBNETS
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: FIREWALL_OUTBOUND_SUBNETS
+              - name: SERVER_COUNTRIES
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: SERVER_COUNTRIES
+              - name: TZ
+                value: "Europe/Paris"
+
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - wget --no-verbose --tries=1 --spider http://127.0.0.1:8888 || exit 1
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+          port-forward:
+            dependsOn: gluetun
+            image:
+              repository: docker.io/snoringdragon/gluetun-qbittorrent-port-manager
+              tag: "1.0"
+            env:
+              - name: QBITTORRENT_SERVER
+                value: localhost
+              - name: QBITTORRENT_PORT
+                value: "8081"
+              - name: PORT_FORWARDED
+                value: "/tmp/gluetun/forwarded_port"
+          # qBittorrent application container
+          app:
+            image:
+              repository: lscr.io/linuxserver/qbittorrent
+              tag: 4.6.3
+
+            env:
+              - name: PUID
+                value: "1000"
+              - name: PGID
+                value: "1000"
+              - name: TZ
+                value: "Europe/Paris"
+              - name: WEBUI_PORT
+                value: "8081"
+              - name: DOCKER_MODS
+                value: "ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest"
+
+            resources:
+              requests:
+                cpu: 500m
+                memory: 512Mi
+              limits:
+                cpu: 2000m
+                memory: 2Gi
+
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8081
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+
+    service:
+      app:
+        controller: qbittorrent
+        ports:
+          http:
+            port: 8081
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: qbit2.erwanleboucher.dev
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - secretName: qbittorrent-tls
+            hosts:
+              - qbit2.erwanleboucher.dev
+
+    persistence:
+      config:
+        type: hostPath
+        hostPath: /opt/yams/config/qbittorrent
+        globalMounts:
+          - path: /config
+
+      data:
+        type: hostPath
+        hostPath: /srv/media
+        globalMounts:
+          - path: /data
+      gluetun-data:
+        type: emptyDir
+        advancedMounts:
+          main:
+            gluetun:
+              - path: /tmp/gluetun
+            port-forward:
+              - path: /tmp/gluetun
+                readOnly: true
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
