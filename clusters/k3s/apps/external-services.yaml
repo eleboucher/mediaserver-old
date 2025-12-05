@@ -1,0 +1,199 @@
+---
+# External services (not in Docker Compose)
+# These services run on the host or are deployed separately in K3s
+#
+# Home Assistant - http://192.168.1.40:8123
+apiVersion: v1
+kind: Service
+metadata:
+  name: home-assistant
+  namespace: docker-services
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8123
+      targetPort: 8123
+      protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: home-assistant
+  namespace: docker-services
+subsets:
+  - addresses:
+      - ip: 192.168.1.40
+    ports:
+      - port: 8123
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: home-assistant
+  namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - home.erwanleboucher.dev
+      secretName: home-tls
+  rules:
+    - host: home.erwanleboucher.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: home-assistant
+                port:
+                  number: 8123
+---
+# AdGuard Home Web Interface - http://192.168.1.54:3000
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguard
+  namespace: docker-services
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: adguard
+  namespace: docker-services
+subsets:
+  - addresses:
+      - ip: 192.168.1.54
+    ports:
+      - port: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard
+  namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - dns.erwanleboucher.dev
+      secretName: dns-tls
+  rules:
+    - host: dns.erwanleboucher.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adguard
+                port:
+                  number: 3000
+---
+# Homepage Dashboard - http://192.168.1.55:80
+apiVersion: v1
+kind: Service
+metadata:
+  name: homepage
+  namespace: docker-services
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: homepage
+  namespace: docker-services
+subsets:
+  - addresses:
+      - ip: 192.168.1.55
+    ports:
+      - port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homepage
+  namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - dash.erwanleboucher.dev
+      secretName: dash-tls
+  rules:
+    - host: dash.erwanleboucher.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homepage
+                port:
+                  number: 80
+---
+# Uptime Kuma - http://192.168.1.56:80
+apiVersion: v1
+kind: Service
+metadata:
+  name: uptime-kuma
+  namespace: docker-services
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: uptime-kuma
+  namespace: docker-services
+subsets:
+  - addresses:
+      - ip: 192.168.1.56
+    ports:
+      - port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: uptime-kuma
+  namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - status.erwanleboucher.dev
+      secretName: status-tls
+  rules:
+    - host: status.erwanleboucher.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: uptime-kuma
+                port:
+                  number: 80
