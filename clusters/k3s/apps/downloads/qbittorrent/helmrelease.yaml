@@ -132,7 +132,6 @@ spec:
                 value: "/tmp/gluetun/forwarded_port"
           # qBittorrent application container
           app:
-            dependsOn: gluetun
             image:
               repository: lscr.io/linuxserver/qbittorrent
               tag: 4.6.3
