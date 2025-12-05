@@ -62,7 +62,11 @@ spec:
         name: adguard-tls-secret
         mountPath: /opt/adguardhome/ssl
         readOnly: true
-
+    securityContext:
+      capabilities:
+        add:
+          - NET_BIND_SERVICE
+          - NET_RAW
     # 4. Configuration (AdGuardHome.yaml)
     config: |
       tls:
