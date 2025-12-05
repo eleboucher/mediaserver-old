@@ -28,7 +28,7 @@ spec:
       dns-tcp:
         enabled: true
         type: ClusterIP
-        externalTrafficPolicy: ""
+        externalTrafficPolicy: null
         ports:
           dns-tcp:
             enabled: true
@@ -37,7 +37,7 @@ spec:
       dns-udp:
         enabled: true
         type: ClusterIP
-        externalTrafficPolicy: ""
+        externalTrafficPolicy: null
         ports:
           dns-udp:
             enabled: true
@@ -48,15 +48,14 @@ spec:
     persistence:
       config:
         enabled: true
-        type: hostPath
-        hostPath: /opt/yams/config/adguard-primary/conf
-        mountPath: /opt/adguardhome/conf
-      work:
+        storageClass: "local-path"
+        accessMode: ReadWriteOnce
+        size: 1Gi
+      data:
         enabled: true
-        type: hostPath
-        hostPath: /opt/yams/config/adguard-primary/work
-        mountPath: /opt/adguardhome/work
-      # Mount the TLS cert
+        storageClass: "local-path"
+        accessMode: ReadWriteOnce
+        size: 10Gi
       tls:
         enabled: true
         type: secret

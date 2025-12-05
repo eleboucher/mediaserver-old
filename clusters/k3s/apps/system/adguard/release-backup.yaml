@@ -27,7 +27,7 @@ spec:
       dns-tcp:
         enabled: true
         type: ClusterIP
-        externalTrafficPolicy: ""
+        externalTrafficPolicy: null
         ports:
           dns-tcp:
             enabled: true
@@ -36,7 +36,7 @@ spec:
       dns-udp:
         enabled: true
         type: ClusterIP
-        externalTrafficPolicy: ""
+        externalTrafficPolicy: null
         ports:
           dns-udp:
             enabled: true
@@ -47,14 +47,14 @@ spec:
     persistence:
       config:
         enabled: true
-        type: hostPath
-        hostPath: /mnt/data/adguard/conf # Adjust this path for your VM
-        mountPath: /opt/adguardhome/conf
-      work:
+        storageClass: "local-path"
+        accessMode: ReadWriteOnce
+        size: 1Gi
+      data:
         enabled: true
-        type: hostPath
-        hostPath: /mnt/data/adguard/work # Adjust this path for your VM
-        mountPath: /opt/adguardhome/work
+        storageClass: "local-path"
+        accessMode: ReadWriteOnce
+        size: 10Gi
       tls:
         enabled: true
         type: secret
