@@ -8,35 +8,16 @@ spec:
   chart:
     spec:
       chart: adguard-home
-      version: "0.3.25"
+      version: "0.x.x"
       sourceRef:
         kind: HelmRepository
-        name: adguard-community
+        name: gabe565
   values:
-    # 1. Pin to the Freebox Node
+    # 1. Pin to Freebox
     nodeSelector:
       kubernetes.io/hostname: "k3s"
 
-    # 2. Persistence (Smaller disk for backup)
-    persistence:
-      config:
-        enabled: true
-        storageClass: "local-path"
-        accessMode: ReadWriteOnce
-        size: 1Gi
-      data:
-        enabled: true
-        storageClass: "local-path"
-        accessMode: ReadWriteOnce
-        size: 5Gi
-      tls:
-        enabled: true
-        type: secret
-        name: adguard-tls-secret
-        mountPath: /opt/adguardhome/ssl
-        readOnly: true
-
-    # 3. Networking
+    # 2. Internal Services
     service:
       main:
         type: ClusterIP
@@ -59,6 +40,25 @@ spec:
             enabled: true
             port: 53
             protocol: UDP
+
+    # 3. Storage (HostPath on Freebox VM Disk)
+    persistence:
+      config:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/data/adguard/conf # Adjust this path for your VM
+        mountPath: /opt/adguardhome/conf
+      work:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/data/adguard/work # Adjust this path for your VM
+        mountPath: /opt/adguardhome/work
+      tls:
+        enabled: true
+        type: secret
+        name: adguard-tls-secret
+        mountPath: /opt/adguardhome/ssl
+        readOnly: true
 
     # 4. Config (Same as primary)
     config: |

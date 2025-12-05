@@ -15,17 +15,14 @@ spec:
     spec:
       containers:
         - name: sync
-          image: ghcr.io/bakito/adguardhome-sync:v0.6.2 # Pin version for stability
+          image: ghcr.io/bakito/adguardhome-sync:v0.6.2
           env:
-            # Using internal K8s DNS names (Service Name + Namespace)
+            # Connect using internal ClusterIP DNS names
             - name: ORIGIN_URL
               value: "http://adguard-primary-adguard-home.adguard.svc.cluster.local"
             - name: REPLICA_URL
               value: "http://adguard-backup-adguard-home.adguard.svc.cluster.local"
             - name: CRON
-              value: "*/1 * * * *"
+              value: "*/5 * * * *" # Sync every 5 minutes
             - name: LOG_LEVEL
               value: "info"
-            # If you have passwords, use a SecretKeyRef here!
-            # - name: ORIGIN_USERNAME
-            #   valueFrom: { secretKeyRef: { name: adguard-secrets, key: username } }
