@@ -157,6 +157,17 @@ spec:
                 memory: 2Gi
 
             probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8081
+                  initialDelaySeconds: 10
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
               liveness:
                 enabled: true
                 custom: true
@@ -164,8 +175,7 @@ spec:
                   httpGet:
                     path: /
                     port: 8081
-                  initialDelaySeconds: 30
-                  periodSeconds: 10
+                  periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
 
