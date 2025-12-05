@@ -45,7 +45,7 @@ share_limits:
     priority: 1
     include_all_tags:
     - noHL
-
+    max_ratio: 1.0
     max_seeding_time: 8d
     min_last_active: 30m
     cleanup: true
