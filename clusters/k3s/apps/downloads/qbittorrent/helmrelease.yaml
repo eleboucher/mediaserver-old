@@ -26,6 +26,11 @@ spec:
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
+          dnsPolicy: "None"
+          dnsConfig:
+            nameservers:
+              - 1.1.1.1
+              - 1.0.0.1
 
         containers:
           # Gluetun VPN container (network provider)
