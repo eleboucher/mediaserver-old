@@ -36,6 +36,8 @@ cat:
 tracker:
   leech:
     tag: TorrentLeech
+  tracker.opentrackr.org:
+    tag: tracker.opentrackr.org
 nohardlinks:
   radarr:
   tv-sonarr:
