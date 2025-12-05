@@ -208,7 +208,7 @@ spec:
     persistence:
       config:
         type: hostPath
-        hostPath: /opt/yams/config/qbittorrent
+        hostPath: /opt/yams/config/qbittorrent2
         globalMounts:
           - path: /config
 
