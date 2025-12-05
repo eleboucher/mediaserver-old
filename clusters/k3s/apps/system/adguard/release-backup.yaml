@@ -16,6 +16,11 @@ spec:
     # 1. Pin to Freebox
     nodeSelector:
       kubernetes.io/hostname: "k3s"
+    tolerations:
+      - key: "freebox"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
     securityContext:
       capabilities:
         add:

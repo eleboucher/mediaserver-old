@@ -38,6 +38,12 @@ spec:
     nodeSelector:
       kubernetes.io/hostname: "k3s"
 
+    tolerations:
+      - key: "freebox"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+
     service:
       type: ClusterIP
       port: 80
