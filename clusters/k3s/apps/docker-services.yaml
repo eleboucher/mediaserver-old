@@ -26,7 +26,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.1  # Will be updated with actual Docker IP
+      - ip: 172.20.0.7
     ports:
       - port: 8096
 ---
@@ -314,7 +314,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.1  # Will update after checking
+      - ip: 172.20.0.5
     ports:
       - port: 5690
 ---
@@ -362,6 +362,6 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.1  # Will update after checking
+      - ip: 172.20.0.4
     ports:
       - port: 6868
