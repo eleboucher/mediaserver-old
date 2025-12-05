@@ -7,18 +7,21 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 6767
-    targetPort: 6767
-    protocol: TCP
+    - port: 6767
+      targetPort: 6767
+      protocol: TCP
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: bazarr
   namespace: docker-services
-subsets:
-- addresses:
-  - ip: 192.168.1.40
-  ports:
+  labels:
+    kubernetes.io/service-name: bazarr
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.1.40
+ports:
   - port: 6767
----
+    protocol: TCP

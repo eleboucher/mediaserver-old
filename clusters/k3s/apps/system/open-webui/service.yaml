@@ -7,18 +7,21 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8083
-    targetPort: 8083
-    protocol: TCP
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: open-webui
   namespace: docker-services
-subsets:
-- addresses:
-  - ip: 192.168.1.40
-  ports:
-  - port: 8083
----
+  labels:
+    kubernetes.io/service-name: open-webui
+addressType: IPv4
+endpoints:
+  - addresses:
+      - 192.168.1.40
+ports:
+  - port: 3000
+    protocol: TCP
