@@ -34,6 +34,7 @@ spec:
             image:
               repository: qmcgaw/gluetun
               tag: v3.40.3
+
             probes:
               startup:
                 enabled: false
@@ -43,12 +44,12 @@ spec:
                 spec:
                   exec:
                     command:
-                      - /bin/sh
+                      - sh
                       - -c
-                      - wget --no-verbose --tries=1 --spider http://127.0.0.1:9999 || exit 1
-                  initialDelaySeconds: 30
-                  periodSeconds: 30
-                  timeoutSeconds: 5
+                      - "ping -c 1 $(echo $WIREGUARD_ADDRESSES | cut -d'/' -f1)"
+                  initialDelaySeconds: 5
+                  periodSeconds: 3
+                  timeoutSeconds: 2
                   failureThreshold: 3
             lifecycle:
               postStart:
@@ -100,6 +101,10 @@ spec:
                 value: "8081,9999"
               - name: FIREWALL_OUTBOUND_SUBNETS
                 value: "10.42.0.0/16,10.43.0.0/16,192.168.1.0/24"
+              - name: DNS_KEEP_NAMESERVER
+                value : "on"
+              - name: DOT
+                value: "off"
 
             resources:
               requests:
