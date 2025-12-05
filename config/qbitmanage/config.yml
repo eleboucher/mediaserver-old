@@ -31,14 +31,14 @@ directory:
   torrents_dir:
 cat:
   radarr: /data/downloads/torrents
-  sonarr: /data/downloads/torrents
+  tv-sonarr: /data/downloads/torrents
 
 tracker:
   leech:
     tag: TorrentLeech
 nohardlinks:
   radarr:
-  sonarr:
+  tv-sonarr:
 
 share_limits:
   noHL:
