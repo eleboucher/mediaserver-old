@@ -38,7 +38,9 @@ services:
     image: ghcr.io/cleanuparr/cleanuparr:latest
     container_name: cleanuparr
     restart: unless-stopped
-    network_mode: "service:gluetun"
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.23
     ports:
       - "11011:11011"
     volumes:
@@ -97,20 +99,20 @@ services:
     network_mode: "service:gluetun"
 
   # qBitorrent is used to download torrents
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:4.6.3
-    container_name: qbittorrent
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - WEBUI_PORT=8081
-      - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${MEDIA_DIRECTORY}:/data
-      - ${INSTALL_DIRECTORY}/config/qbittorrent:/config
-    restart: unless-stopped
-    network_mode: "service:gluetun"
+  # qbittorrent:
+  #   image: lscr.io/linuxserver/qbittorrent:4.6.3
+  #   container_name: qbittorrent
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - WEBUI_PORT=8081
+  #     - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ${MEDIA_DIRECTORY}:/data
+  #     - ${INSTALL_DIRECTORY}/config/qbittorrent:/config
+  #   restart: unless-stopped
+  #   network_mode: "service:gluetun"
 
   # Sonarr is used to query, add downloads to the download queue and index TV shows
   # https://sonarr.tv/
@@ -372,21 +374,21 @@ services:
         ipv4_address: 172.20.0.50 # Fixed IP for stability
 
   # Open WebUI: The ChatGPT-like Interface
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:v0.6.40
-    container_name: open-webui
-    restart: unless-stopped
-    ports:
-      - "8083:8080"
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/open-webui:/app/backend/data
-    environment:
-      # Connects to the Ollama container internally
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - WEBUI_AUTH=true
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.51
+  # open-webui:
+  #   image: ghcr.io/open-webui/open-webui:v0.6.40
+  #   container_name: open-webui
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8083:8080"
+  #   volumes:
+  #     - ${INSTALL_DIRECTORY}/config/open-webui:/app/backend/data
+  #   environment:
+  #     # Connects to the Ollama container internally
+  #     - OLLAMA_BASE_URL=http://ollama:11434
+  #     - WEBUI_AUTH=true
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.51
 
   # Portainer helps debugging and monitors the containers
   portainer:

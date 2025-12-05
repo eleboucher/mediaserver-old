@@ -186,7 +186,7 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: websecure
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - host: qbit2.erwanleboucher.dev
+          - host: qbit.erwanleboucher.dev
             paths:
               - path: /
                 pathType: Prefix
@@ -196,7 +196,7 @@ spec:
         tls:
           - secretName: qbittorrent-tls
             hosts:
-              - qbit2.erwanleboucher.dev
+              - qbit.erwanleboucher.dev
 
     persistence:
       config:
