@@ -12,23 +12,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: uptime-kuma
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: uptime-kuma
-            patch: |
-              - op: add
-                path: /spec/template/spec/hostAliases
-                value:
-                  - ip: "192.168.1.52"
-                    hostnames:
-                    - "home.erwanleboucher.dev"
-                    - "watch.erwanleboucher.dev"
-                    - "sonarr.erwanleboucher.dev"
-                    - "radarr.erwanleboucher.dev"
-                    - "dns.erwanleboucher.dev"
+
   values:
     image:
       repository: louislam/uptime-kuma
