@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: adguard-home
-      version: "5.x.x" # Use latest version
+      version: "0.3.25" # Use latest version
       sourceRef:
         kind: HelmRepository
         name: adguard-community
