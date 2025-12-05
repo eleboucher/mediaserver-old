@@ -16,7 +16,11 @@ spec:
     # 1. Pin to Freebox
     nodeSelector:
       kubernetes.io/hostname: "k3s"
-
+    securityContext:
+      capabilities:
+        add:
+          - NET_BIND_SERVICE
+          - NET_RAW
     # 2. Internal Services
     service:
       main:
