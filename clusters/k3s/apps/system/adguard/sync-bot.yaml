@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguard-sync
+  namespace: adguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard-sync
+  template:
+    metadata:
+      labels:
+        app: adguard-sync
+    spec:
+      containers:
+        - name: sync
+          image: ghcr.io/bakito/adguardhome-sync:v0.6.2 # Pin version for stability
+          env:
+            # Using internal K8s DNS names (Service Name + Namespace)
+            - name: ORIGIN_URL
+              value: "http://adguard-primary-adguard-home.adguard.svc.cluster.local"
+            - name: REPLICA_URL
+              value: "http://adguard-backup-adguard-home.adguard.svc.cluster.local"
+            - name: CRON
+              value: "*/1 * * * *"
+            - name: LOG_LEVEL
+              value: "info"
+            # If you have passwords, use a SecretKeyRef here!
+            # - name: ORIGIN_USERNAME
+            #   valueFrom: { secretKeyRef: { name: adguard-secrets, key: username } }

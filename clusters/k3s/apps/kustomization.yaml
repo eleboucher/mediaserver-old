@@ -5,3 +5,4 @@ resources:
   - docker-services.yaml
   - docker-ingresses.yaml
   - external-services.yaml
+  - system
