@@ -28,7 +28,7 @@ spec:
         type: ClusterIP
         ports:
           http:
-            port: 80
+            port: 3000
       dns-tcp:
         enabled: true
         type: ClusterIP
