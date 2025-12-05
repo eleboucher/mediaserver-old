@@ -1,37 +1,4 @@
 services:
-  traefik:
-    image: traefik:v3.6
-    container_name: traefik
-    security_opt:
-      - no-new-privileges:true
-    ports:
-      - "80:80"
-      - "443:443"
-      - "853:853"
-    environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN} # Add this to your .env
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${INSTALL_DIRECTORY}/config/traefik/acme.json:/acme.json
-      - ${INSTALL_DIRECTORY}/config/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entryPoints.dot.address=:853"
-      - "--entryPoints.web.address=:80"
-      - "--entryPoints.websecure.address=:443"
-      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
-      - "--providers.file.filename=/etc/traefik/dynamic.yml"
-      - "--providers.file.watch=true"
-    restart: unless-stopped
-    networks:
-      - yams_network
-
   wizarr:
     container_name: wizarr
     image: ghcr.io/wizarrrr/wizarr:v2025.11.3
