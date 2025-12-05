@@ -5,4 +5,4 @@ metadata:
   namespace: adguard
 spec:
   interval: 1h
-  url: oci://ghcr.io/gabe565/charts/adguard-home
+  url: https://charts.gabe565.com
