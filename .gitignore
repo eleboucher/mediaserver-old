@@ -91,3 +91,5 @@ config/open-webui/*
 config/wizarr/sessions/*
 
 *.tar.gz
+
+config/sabnzbd/Downloads/*
