@@ -49,10 +49,15 @@ spec:
         expose:
           default: true
 
-    # Dashboard access (will use cert-manager certificate)
+    # Enable dashboard API
+    api:
+      dashboard: true
+      insecure: false
+
+    # We'll create our own IngressRoute with cert-manager certificate
     ingressRoute:
       dashboard:
-        enabled: false  # We'll create a proper Ingress with cert-manager
+        enabled: false
 
     # No ACME - cert-manager handles certificates
     # Traefik will use certificates from Kubernetes Ingress TLS secrets
