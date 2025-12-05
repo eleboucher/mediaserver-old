@@ -56,5 +56,5 @@ spec:
     app.kubernetes.io/instance: adguard-primary
   ports:
     - name: http
-      port: 80
-      targetPort: 80
+      port: 3000
+      targetPort: 3000
