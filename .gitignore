@@ -86,3 +86,4 @@ config/ollama/*
 config/qbittorrent/*
 .env
 config/adguard/work/data/*
+config/open-webui/*

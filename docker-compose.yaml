@@ -201,6 +201,8 @@ services:
     container_name: profilarr
     volumes:
         - ${INSTALL_DIRECTORY}/config/profilarr:/config # Replace with your actual path
+    ports:
+      - 6868:6868
     environment:
         - TZ=Europe/Paris
     restart: unless-stopped
@@ -369,7 +371,8 @@ services:
     image: ghcr.io/open-webui/open-webui:v0.6.40
     container_name: open-webui
     restart: unless-stopped
-
+    ports:
+      - "8083:8080"
     volumes:
       - ${INSTALL_DIRECTORY}/config/open-webui:/app/backend/data
     environment:
