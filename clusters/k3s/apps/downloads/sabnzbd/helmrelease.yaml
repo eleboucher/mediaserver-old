@@ -29,90 +29,6 @@ spec:
             fsGroupChangePolicy: "OnRootMismatch"
 
         containers:
-          # Gluetun VPN container (network provider)
-          gluetun:
-            image:
-              repository: qmcgaw/gluetun
-              tag: v3.40.3
-
-            probes:
-              startup:
-                enabled: false
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  exec:
-                    command:
-                      - sh
-                      - -c
-                      - "wget -nv -t1 -O - 'http://127.0.0.1:9999' || exit 1"
-                  initialDelaySeconds: 5
-                  periodSeconds: 3
-                  timeoutSeconds: 2
-                  failureThreshold: 3
-            lifecycle:
-              postStart:
-                exec:
-                  command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
-            securityContext:
-              capabilities:
-                add:
-                  - NET_ADMIN
-            env:
-              - name: VPN_SERVICE_PROVIDER
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: VPN_SERVICE_PROVIDER
-              - name: VPN_TYPE
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: VPN_TYPE
-              - name: WIREGUARD_PRIVATE_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: WIREGUARD_PRIVATE_KEY
-              - name: VPN_PORT_FORWARDING
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: VPN_PORT_FORWARDING
-              - name: VPN_PORT_FORWARDING_PROVIDER
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: VPN_PORT_FORWARDING_PROVIDER
-              - name: PORT_FORWARD_ONLY
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: PORT_FORWARD_ONLY
-              - name: SERVER_COUNTRIES
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: SERVER_COUNTRIES
-              - name: TZ
-                value: "Europe/Paris"
-              - name: FIREWALL_INPUT_PORTS
-                value: "8081,9999"
-              - name: FIREWALL_OUTBOUND_SUBNETS
-                value: "10.42.0.0/16,10.43.0.0/16,192.168.1.0/24"
-              - name: DNS_KEEP_NAMESERVER
-                value : "on"
-              - name: DOT
-                value: "off"
-
-            resources:
-              requests:
-                cpu: 100m
-                memory: 128Mi
-              limits:
-                cpu: 500m
-                memory: 512Mi
           app:
             image:
               repository: lscr.io/linuxserver/sabnzbd
@@ -124,7 +40,6 @@ spec:
                 value: "1000"
               - name: TZ
                 value: "Europe/Paris"
-
             resources:
               requests:
                 cpu: 500m
@@ -132,7 +47,6 @@ spec:
               limits:
                 cpu: 2000m
                 memory: 2Gi
-
             probes:
               startup:
                 enabled: true
