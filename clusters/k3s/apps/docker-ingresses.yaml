@@ -1,31 +1,18 @@
 ---
-# Wildcard certificate for *.erwanleboucher.dev
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: erwanleboucher-wildcard
-  namespace: docker-services
-spec:
-  secretName: erwanleboucher-wildcard-tls
-  issuerRef:
-    name: letsencrypt-production
-    kind: ClusterIssuer
-  dnsNames:
-    - "*.erwanleboucher.dev"
-    - "erwanleboucher.dev"
----
 # Jellyfin - watch.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: jellyfin
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - watch.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: watch-erwanleboucher-dev-tls
   rules:
     - host: watch.erwanleboucher.dev
       http:
