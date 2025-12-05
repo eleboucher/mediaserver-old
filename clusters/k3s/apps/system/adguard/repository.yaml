@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: adguard-community
+  name: gabe565
   namespace: adguard
 spec:
   interval: 1h
