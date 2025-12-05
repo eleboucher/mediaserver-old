@@ -5,3 +5,4 @@ resources:
   - namespace.yaml
   - vpn-secret.sops.yaml
   - qbittorrent
+  - sabnzbd

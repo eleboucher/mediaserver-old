@@ -1,0 +1,200 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sabnzbd
+  namespace: downloads
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: "3.6.0"
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      sabnzbd:
+        type: deployment
+        replicas: 1
+        strategy: Recreate
+
+        pod:
+          securityContext:
+            fsGroup: 1000
+            fsGroupChangePolicy: "OnRootMismatch"
+
+        containers:
+          # Gluetun VPN container (network provider)
+          gluetun:
+            image:
+              repository: qmcgaw/gluetun
+              tag: v3.40.3
+
+            probes:
+              startup:
+                enabled: false
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - sh
+                      - -c
+                      - "wget -nv -t1 -O - 'http://127.0.0.1:9999' || exit 1"
+                  initialDelaySeconds: 5
+                  periodSeconds: 3
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+            lifecycle:
+              postStart:
+                exec:
+                  command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
+            securityContext:
+              capabilities:
+                add:
+                  - NET_ADMIN
+            env:
+              - name: VPN_SERVICE_PROVIDER
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_SERVICE_PROVIDER
+              - name: VPN_TYPE
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_TYPE
+              - name: WIREGUARD_PRIVATE_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: WIREGUARD_PRIVATE_KEY
+
+              - name: SERVER_COUNTRIES
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: SERVER_COUNTRIES
+              - name: TZ
+                value: "Europe/Paris"
+              - name: FIREWALL_INPUT_PORTS
+                value: "8080,9999"
+              - name: FIREWALL_OUTBOUND_SUBNETS
+                value: "10.42.0.0/16,10.43.0.0/16,192.168.1.0/24"
+              - name: DNS_KEEP_NAMESERVER
+                value : "on"
+              - name: DOT
+                value: "off"
+
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+
+          port-forward:
+            dependsOn: gluetun
+            image:
+              repository: docker.io/snoringdragon/gluetun-sabnzbd-port-manager
+              tag: "1.0"
+            env:
+              - name: QBITTORRENT_SERVER
+                value: localhost
+              - name: QBITTORRENT_PORT
+                value: "8080"
+
+              - name: PORT_FORWARDED
+                value: "/tmp/gluetun/forwarded_port"
+          # qBittorrent application container
+          app:
+            image:
+              repository: lscr.io/linuxserver/sabnzbd
+              tag: 4.5.5-ls238
+            env:
+              - name: PUID
+                value: "1000"
+              - name: PGID
+                value: "1000"
+              - name: TZ
+                value: "Europe/Paris"
+
+            resources:
+              requests:
+                cpu: 500m
+                memory: 512Mi
+              limits:
+                cpu: 2000m
+                memory: 2Gi
+
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8080
+                  initialDelaySeconds: 10
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 30
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: 8080
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+
+    service:
+      app:
+        controller: sabnzbd
+        ports:
+          http:
+            port: 8080
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        className: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+        hosts:
+          - host: sabnzbd.erwanleboucher.dev
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: app
+                  port: http
+        tls:
+          - secretName: sabnzbd-tls
+            hosts:
+              - sabnzbd.erwanleboucher.dev
+
+    persistence:
+      config:
+        type: hostPath
+        hostPath: /opt/yams/config/sabnzbd
+        globalMounts:
+          - path: /config
+
+      data:
+        type: hostPath
+        hostPath: /srv/media
+        globalMounts:
+          - path: /data
+
