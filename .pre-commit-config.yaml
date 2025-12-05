@@ -9,7 +9,7 @@ repos:
         entry: bash -c '
           failed=0;
           for file in "$@"; do
-            if grep -q "stringData" "$file"; then
+            if grep -q "stringData" "$file" && ! grep -q "sops:"; then
               sops --encrypt --in-place "$file";
               echo "🔐 Encrypted $file";
               failed=1;
