@@ -12,7 +12,8 @@
       "Bash(find:*)",
       "Bash(git commit:*)",
       "Bash(git push)",
-      "Bash(kubectl run:*)"
+      "Bash(kubectl run:*)",
+      "Bash(flux reconcile kustomization:*)"
     ],
     "deny": [],
     "ask": []
