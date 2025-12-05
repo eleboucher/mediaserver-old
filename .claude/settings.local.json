@@ -15,7 +15,8 @@
       "Bash(kubectl run:*)",
       "Bash(flux reconcile kustomization:*)",
       "Bash(curl:*)",
-      "Bash(kubectl exec:*)"
+      "Bash(kubectl exec:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
