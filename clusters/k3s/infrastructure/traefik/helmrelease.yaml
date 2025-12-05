@@ -44,44 +44,18 @@ spec:
         port: 443
         tls:
           enabled: true
-          certResolver: myresolver
       dns-over-tls:
         port: 853
         expose:
           default: true
 
-    # Dashboard access (optional, enable if needed)
+    # Dashboard access (will use cert-manager certificate)
     ingressRoute:
       dashboard:
-        enabled: true
-        matchRule: Host(`traefik.erwanleboucher.dev`)
-        entryPoints:
-          - websecure
-        tls:
-          certResolver: myresolver
+        enabled: false  # We'll create a proper Ingress with cert-manager
 
-    # ACME configuration with Cloudflare DNS challenge
-    additionalArguments:
-      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.myresolver.acme.email=erwanleboucher@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/data/acme.json"
-      - "--certificatesresolvers.myresolver.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
-
-    # Cloudflare API token from environment
-    env:
-      - name: CF_DNS_API_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: cloudflare-api-token
-            key: token
-
-    # Persistent storage for ACME certificates
-    persistence:
-      enabled: true
-      storageClass: local-path
-      size: 128Mi
-      accessMode: ReadWriteOnce
+    # No ACME - cert-manager handles certificates
+    # Traefik will use certificates from Kubernetes Ingress TLS secrets
 
     # Enable logging
     logs:
