@@ -19,6 +19,43 @@ settings:
   rem_unregistered_ignore_list: []
   rem_unregistered_grace_minutes: 10
   rem_unregistered_max_torrents: 10
+qbt:
+  host: http://gluetun:8081
+  user: !ENV QBIT_USER
+  pass: !ENV QBIT_PASS
+
+directory:
+  root_dir: /data/downloads/torrents
+
+  recycle_bin: /data/downloads/torrents/.RecycleBin
+  torrents_dir:
+cat:
+  radarr: /data/downloads/torrents
+  sonarr: /data/downloads/torrents
+
+tracker:
+  leech:
+    tag: TorrentLeech
+nohardlinks:
+  radarr:
+  sonarr:
+
+share_limits:
+  noHL:
+    priority: 1
+    include_all_tags:
+    - noHL
+
+    max_seeding_time: 8d
+    min_last_active: 30m
+    cleanup: true
+
+    add_group_to_tag: false
+recyclebin:
+  enabled: true
+  empty_after_x_days: 7
+  save_torrents: false
+  split_by_category: false
 webhooks:
   error:
   run_start:
@@ -33,3 +70,8 @@ webhooks:
     tag_nohardlinks:
     share_limits:
     cleanup_dirs:
+orphaned:
+  empty_after_x_days:
+  exclude_patterns:
+  max_orphaned_files_to_delete: 50
+  min_file_age_minutes: 0
