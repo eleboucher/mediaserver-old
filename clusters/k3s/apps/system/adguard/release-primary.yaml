@@ -28,6 +28,7 @@ spec:
       dns-tcp:
         enabled: true
         type: ClusterIP
+        externalTrafficPolicy: ""
         ports:
           dns-tcp:
             enabled: true
@@ -36,6 +37,7 @@ spec:
       dns-udp:
         enabled: true
         type: ClusterIP
+        externalTrafficPolicy: ""
         ports:
           dns-udp:
             enabled: true
