@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     networks:
       yams_network:
-        ipv4_address: 172.20.0.23
+        ipv4_address: 172.20.0.28
     ports:
       - "11011:11011"
     volumes:

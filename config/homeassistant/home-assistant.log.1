@@ -1,1 +1,164 @@
-2025-12-05 22:25:03.200 WARNING (SyncWorker_1) [homeassistant.loader] We found a custom integration stagg_ekg_pro which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues with Home Assistant
+2025-12-05 22:25:32.217 WARNING (SyncWorker_0) [homeassistant.loader] We found a custom integration stagg_ekg_pro which has not been tested by Home Assistant. This component might cause stability problems, be sure to disable it if you experience issues with Home Assistant
+2025-12-05 22:25:45.103 INFO (MainThread) [Jellyfin] ---[ START JELLYFINCLIENT ]---
+2025-12-05 22:25:45.160 WARNING (MainThread) [habluetooth.wrappers] A0:A3:B3:03:7C:7A: BleakClient.connect() called without bleak-retry-connector. For reliable connection establishment, use bleak_retry_connector.establish_connection(). See https://github.com/Bluetooth-Devices/bleak-retry-connector
+2025-12-05 22:25:45.161 ERROR (MainThread) [custom_components.stagg_ekg_pro.kettle_ble] ❌ Connection failed: No backend with an available connection slot that can reach address A0:A3:B3:03:7C:7A was found
+2025-12-05 22:25:45.161 ERROR (MainThread) [custom_components.stagg_ekg_pro] Failed to connect to kettle: Failed to connect to kettle (attempt 1)
+2025-12-05 22:25:45.387 ERROR (SyncWorker_0) [JELLYFIN.jellyfin_apiclient_python.connection_manager] Failed to connect to server: https://watch.erwanleboucher.dev
+2025-12-05 22:25:45.682 ERROR (MainThread) [homeassistant.util.logging] Exception in <function _process_media_source_platform at 0x7f08f647a480> when processing platform 'media_source': (<HomeAssistant NOT_RUNNING>, 'jellyfin', <module 'homeassistant.components.jellyfin.media_source' from '/usr/src/homeassistant/homeassistant/components/jellyfin/media_source.py'>)
+Traceback (most recent call last):
+  File "/usr/src/homeassistant/homeassistant/components/media_source/__init__.py", line 90, in _process_media_source_platform
+    source = await platform.async_get_media_source(hass)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/src/homeassistant/homeassistant/components/jellyfin/media_source.py", line 59, in async_get_media_source
+    coordinator = entry.runtime_data
+                  ^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConfigEntry' object has no attribute 'runtime_data'
+
+2025-12-05 22:25:47.122 WARNING (MainThread) [homeassistant.util.loop] Detected blocking call to load_default_certs with args (<ssl.SSLContext object at 0x7f08d98ad4f0>, <Purpose.SERVER_AUTH: _ASN1Object(nid=129, shortname='serverAuth', longname='TLS Web Server Authentication', oid='1.3.6.1.5.5.7.3.1')>) inside the event loop by integration 'freebox' at homeassistant/components/freebox/__init__.py, line 22: await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT]) (offender: /usr/local/lib/python3.13/ssl.py, line 722: context.load_default_certs(purpose)), please create a bug report at https://github.com/home-assistant/core/issues?q=is%3Aopen+is%3Aissue+label%3A%22integration%3A+freebox%22
+For developers, please see https://developers.home-assistant.io/docs/asyncio_blocking_operations/#load_default_certs
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 229, in <module>
+    sys.exit(main())
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 215, in main
+    exit_code = runner.run(runtime_conf)
+  File "/usr/src/homeassistant/homeassistant/runner.py", line 289, in run
+    return loop.run_until_complete(setup_and_run_hass(runtime_config))
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 2050, in _run_once
+    handle._run()
+  File "/usr/local/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 170, in async_setup_component
+    result = await _async_setup_component(hass, domain, config)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 470, in _async_setup_component
+    await asyncio.gather(
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 472, in <genexpr>
+    create_eager_task(
+  File "/usr/src/homeassistant/homeassistant/util/async_.py", line 44, in create_eager_task
+    return Task(coro, loop=loop, name=name, eager_start=True)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 906, in async_setup_locked
+    await self.async_setup(hass, integration=integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 672, in async_setup
+    await self.__async_setup_with_context(hass, integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 761, in __async_setup_with_context
+    result = await component.async_setup_entry(hass, self)
+  File "/usr/src/homeassistant/homeassistant/components/freebox/__init__.py", line 22, in async_setup_entry
+    await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT])
+
+2025-12-05 22:25:47.126 WARNING (MainThread) [homeassistant.util.loop] Detected blocking call to set_default_verify_paths with args (<ssl.SSLContext object at 0x7f08d98ad4f0>,) inside the event loop by integration 'freebox' at homeassistant/components/freebox/__init__.py, line 22: await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT]) (offender: /usr/local/lib/python3.13/ssl.py, line 534: self.set_default_verify_paths()), please create a bug report at https://github.com/home-assistant/core/issues?q=is%3Aopen+is%3Aissue+label%3A%22integration%3A+freebox%22
+For developers, please see https://developers.home-assistant.io/docs/asyncio_blocking_operations/#set_default_verify_paths
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 229, in <module>
+    sys.exit(main())
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 215, in main
+    exit_code = runner.run(runtime_conf)
+  File "/usr/src/homeassistant/homeassistant/runner.py", line 289, in run
+    return loop.run_until_complete(setup_and_run_hass(runtime_config))
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 2050, in _run_once
+    handle._run()
+  File "/usr/local/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 170, in async_setup_component
+    result = await _async_setup_component(hass, domain, config)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 470, in _async_setup_component
+    await asyncio.gather(
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 472, in <genexpr>
+    create_eager_task(
+  File "/usr/src/homeassistant/homeassistant/util/async_.py", line 44, in create_eager_task
+    return Task(coro, loop=loop, name=name, eager_start=True)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 906, in async_setup_locked
+    await self.async_setup(hass, integration=integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 672, in async_setup
+    await self.__async_setup_with_context(hass, integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 761, in __async_setup_with_context
+    result = await component.async_setup_entry(hass, self)
+  File "/usr/src/homeassistant/homeassistant/components/freebox/__init__.py", line 22, in async_setup_entry
+    await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT])
+
+2025-12-05 22:25:47.153 WARNING (MainThread) [homeassistant.util.loop] Detected blocking call to load_verify_locations with args (<ssl.SSLContext object at 0x7f08d98ad4f0>,) inside the event loop by integration 'freebox' at homeassistant/components/freebox/__init__.py, line 22: await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT]) (offender: /usr/local/lib/python3.13/site-packages/freebox_api/aiofreepybox.py, line 124: ssl_ctx.load_verify_locations(cafile=cert_path)), please create a bug report at https://github.com/home-assistant/core/issues?q=is%3Aopen+is%3Aissue+label%3A%22integration%3A+freebox%22
+For developers, please see https://developers.home-assistant.io/docs/asyncio_blocking_operations/#load_verify_locations
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 229, in <module>
+    sys.exit(main())
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 215, in main
+    exit_code = runner.run(runtime_conf)
+  File "/usr/src/homeassistant/homeassistant/runner.py", line 289, in run
+    return loop.run_until_complete(setup_and_run_hass(runtime_config))
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 2050, in _run_once
+    handle._run()
+  File "/usr/local/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 170, in async_setup_component
+    result = await _async_setup_component(hass, domain, config)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 470, in _async_setup_component
+    await asyncio.gather(
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 472, in <genexpr>
+    create_eager_task(
+  File "/usr/src/homeassistant/homeassistant/util/async_.py", line 44, in create_eager_task
+    return Task(coro, loop=loop, name=name, eager_start=True)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 906, in async_setup_locked
+    await self.async_setup(hass, integration=integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 672, in async_setup
+    await self.__async_setup_with_context(hass, integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 761, in __async_setup_with_context
+    result = await component.async_setup_entry(hass, self)
+  File "/usr/src/homeassistant/homeassistant/components/freebox/__init__.py", line 22, in async_setup_entry
+    await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT])
+
+2025-12-05 22:25:47.164 WARNING (MainThread) [homeassistant.util.loop] Detected blocking call to open with args (PosixPath('/config/.storage/freebox/gjmhlrx2_fbxos_fr.conf'), 'r') inside the event loop by integration 'freebox' at homeassistant/components/freebox/__init__.py, line 22: await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT]) (offender: /usr/local/lib/python3.13/site-packages/freebox_api/aiofreepybox.py, line 328: with open(token_file, "r") as f:), please create a bug report at https://github.com/home-assistant/core/issues?q=is%3Aopen+is%3Aissue+label%3A%22integration%3A+freebox%22
+For developers, please see https://developers.home-assistant.io/docs/asyncio_blocking_operations/#open
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 229, in <module>
+    sys.exit(main())
+  File "/usr/src/homeassistant/homeassistant/__main__.py", line 215, in main
+    exit_code = runner.run(runtime_conf)
+  File "/usr/src/homeassistant/homeassistant/runner.py", line 289, in run
+    return loop.run_until_complete(setup_and_run_hass(runtime_config))
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 712, in run_until_complete
+    self.run_forever()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 683, in run_forever
+    self._run_once()
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 2050, in _run_once
+    handle._run()
+  File "/usr/local/lib/python3.13/asyncio/events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 170, in async_setup_component
+    result = await _async_setup_component(hass, domain, config)
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 470, in _async_setup_component
+    await asyncio.gather(
+  File "/usr/src/homeassistant/homeassistant/setup.py", line 472, in <genexpr>
+    create_eager_task(
+  File "/usr/src/homeassistant/homeassistant/util/async_.py", line 44, in create_eager_task
+    return Task(coro, loop=loop, name=name, eager_start=True)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 906, in async_setup_locked
+    await self.async_setup(hass, integration=integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 672, in async_setup
+    await self.__async_setup_with_context(hass, integration)
+  File "/usr/src/homeassistant/homeassistant/config_entries.py", line 761, in __async_setup_with_context
+    result = await component.async_setup_entry(hass, self)
+  File "/usr/src/homeassistant/homeassistant/components/freebox/__init__.py", line 22, in async_setup_entry
+    await api.open(entry.data[CONF_HOST], entry.data[CONF_PORT])
+
+2025-12-05 22:25:47.419 WARNING (MainThread) [homeassistant.components.freebox.router] Home access is not granted
+2025-12-05 22:25:50.157 WARNING (MainThread) [habluetooth.wrappers] A0:A3:B3:03:7C:7A: BleakClient.connect() called without bleak-retry-connector. For reliable connection establishment, use bleak_retry_connector.establish_connection(). See https://github.com/Bluetooth-Devices/bleak-retry-connector
+2025-12-05 22:25:50.157 ERROR (MainThread) [custom_components.stagg_ekg_pro.kettle_ble] ❌ Connection failed: No backend with an available connection slot that can reach address A0:A3:B3:03:7C:7A was found
+2025-12-05 22:25:50.157 ERROR (MainThread) [custom_components.stagg_ekg_pro] Failed to connect to kettle: Failed to connect to kettle (attempt 1)
