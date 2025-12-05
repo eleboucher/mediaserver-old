@@ -97,11 +97,9 @@ spec:
               - name: TZ
                 value: "Europe/Paris"
               - name: FIREWALL_INPUT_PORTS
-                value: "8081"
+                value: "8081,9999"
               - name: FIREWALL_OUTBOUND_SUBNETS
                 value: "10.42.0.0/16,10.43.0.0/16,192.168.1.0/24"
-              - name: DNS_KEEP_NAMESERVER
-                value: "on"
 
             resources:
               requests:
