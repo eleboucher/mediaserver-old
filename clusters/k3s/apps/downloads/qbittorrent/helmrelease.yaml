@@ -145,8 +145,6 @@ spec:
                 value: "Europe/Paris"
               - name: WEBUI_PORT
                 value: "8081"
-              - name: DOCKER_MODS
-                value: "ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest"
 
             resources:
               requests:
