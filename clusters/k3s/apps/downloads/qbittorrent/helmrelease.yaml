@@ -21,6 +21,7 @@ spec:
       qbittorrent:
         type: deployment
         replicas: 1
+        strategy: Recreate
 
         pod:
           securityContext:
@@ -33,6 +34,31 @@ spec:
             image:
               repository: qmcgaw/gluetun
               tag: v3.40.3
+
+            probes:
+              startup:
+                enabled: false
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - wget --no-verbose --tries=1 --spider http://127.0.0.1:8888 || exit 1
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+
+            lifecycle:
+              postStart:
+                exec:
+                  command:
+                    - /bin/sh
+                    - -c
+                    - (ip rule del table 51820; ip -6 rule del table 51820) || true
 
             securityContext:
               capabilities:
@@ -102,20 +128,6 @@ spec:
                 cpu: 500m
                 memory: 512Mi
 
-            probes:
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  exec:
-                    command:
-                      - /bin/sh
-                      - -c
-                      - wget --no-verbose --tries=1 --spider http://127.0.0.1:8888 || exit 1
-                  initialDelaySeconds: 30
-                  periodSeconds: 30
-                  timeoutSeconds: 5
-                  failureThreshold: 3
           port-forward:
             dependsOn: gluetun
             image:
