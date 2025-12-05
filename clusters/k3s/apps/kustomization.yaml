@@ -6,3 +6,4 @@ resources:
   - docker-ingresses.yaml
   - external-services.yaml
   - system
+  - monitoring
