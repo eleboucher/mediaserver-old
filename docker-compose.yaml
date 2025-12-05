@@ -34,8 +34,26 @@ services:
     networks:
       - yams_network
     restart: unless-stopped
+  cleanuparr:
+    image: ghcr.io/cleanuparr/cleanuparr:latest
+    container_name: cleanuparr
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+    ports:
+      - "11011:11011"
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/cleanuparr:/config
+      # Mount your downloads directory if needed
+      - ${MEDIA_DIRECTORY}:/downloads
+    environment:
+      - PORT=11011
+      - BASE_PATH=
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=022
+      - TZ=${TZ}
 
-    # Gluetun is our VPN, so you can download torrents safely
+  # Gluetun is our VPN, so you can download torrents safely
   gluetun:
     image: qmcgaw/gluetun:v3.40.3
     container_name: gluetun
