@@ -107,16 +107,8 @@ spec:
                     key: SERVER_COUNTRIES
               - name: TZ
                 value: "Europe/Paris"
-              - name: FIREWALL_VPN_INPUT_PORTS
-                value: "8081"
               - name: FIREWALL_INPUT_PORTS
                 value: "8081"
-              - name: DISABLE_IPV6
-                value: "yes"
-              - name: HEALTH_VPN_DURATION_INITIAL
-                value: "60s"
-              - name: HEALTH_VPN_DURATION_ADDITION
-                value: "30s"
 
             resources:
               requests:
@@ -144,7 +136,6 @@ spec:
             image:
               repository: lscr.io/linuxserver/qbittorrent
               tag: 4.6.3
-
             env:
               - name: PUID
                 value: "1000"
