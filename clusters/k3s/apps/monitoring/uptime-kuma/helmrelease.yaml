@@ -39,14 +39,9 @@ spec:
       kubernetes.io/hostname: "k3s"
 
     service:
-      type: LoadBalancer
-      loadBalancerIP: 192.168.1.56 # The VIP we defined earlier
+      type: ClusterIP
       port: 80
       targetPort: 3001
-      # Force traffic to stay local to the Freebox
-      externalTrafficPolicy: Local
-      annotations:
-        metallb.universe.tf/allow-shared-ip: "uptime-vip"
 
     ingress:
       enabled: true
