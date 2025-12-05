@@ -4,13 +4,14 @@ metadata:
   name: adguard-dashboard
   namespace: adguard
   annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - dns.erwanleboucher.dev
-      secretName: adguard-tls-secret
+      secretName: adguard-tls
   rules:
     - host: dns.erwanleboucher.dev
       http:
@@ -19,7 +20,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                # ⚠️ Points to the Primary-Only service
                 name: adguard-primary-internal
                 port:
                   number: 3000
