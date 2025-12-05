@@ -160,22 +160,6 @@ services:
       yams_network:
         ipv4_address: 172.20.0.14
 
-  autobrr:
-    container_name: autobrr
-    image: ghcr.io/autobrr/autobrr:v1.70
-    restart: unless-stopped
-    ports:
-      - 7474:7474
-    environment:
-      - TZ=${TZ}
-      - PUID=${PUID}
-      - PGID=${PGID}
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.24
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/autobrr:/config
-
 
   # Bazarr is used to download and categorize subtitles
   # https://www.bazarr.media/

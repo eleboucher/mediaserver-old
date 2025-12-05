@@ -87,3 +87,5 @@ config/qbittorrent/*
 .env
 config/adguard/work/data/*
 config/open-webui/*
+
+config/wizarr/sessions/*
