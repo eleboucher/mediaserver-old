@@ -1,0 +1,626 @@
+services:
+  traefik:
+    image: traefik:v3.6
+    container_name: traefik
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+      - "853:853"
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN} # Add this to your .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${INSTALL_DIRECTORY}/config/traefik/acme.json:/acme.json
+      - ${INSTALL_DIRECTORY}/config/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.dot.address=:853"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
+      - "--providers.file.filename=/etc/traefik/dynamic.yml"
+      - "--providers.file.watch=true"
+    restart: unless-stopped
+    networks:
+      - yams_network
+
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:v2025.11.3
+    ports:
+      - 5690:5690
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/wizarr:/data
+    environment:
+      - PUID=${PUID} #Set UID
+      - PGID=${PGID} #Set GID
+      - DISABLE_BUILTIN_AUTH=false #Set to true ONLY if you are using another auth provider (Authelia, Authentik, etc)
+      - TZ=${TZ} #Set your timezone here
+    networks:
+      - yams_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wizarr.rule=Host(`wizarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.wizarr.entrypoints=websecure"
+      - "traefik.http.routers.wizarr.tls.certresolver=myresolver"
+      - "traefik.http.services.wizarr.loadbalancer.server.port=5690"
+  # jellyfin is used to serve your media to the client devices
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:10.11.4ubu2404-ls10
+    container_name: jellyfin
+    group_add:
+      - '992'
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - VERSION=docker
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128 # for hardware acceleration
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/${MEDIA_SERVICE}:/config
+    ports: # plex
+      - 8096:8096 # plex
+    networks:
+      - yams_network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`watch.erwanleboucher.dev`)"
+      - "traefik.http.routers.jellyfin.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin.tls.certresolver=myresolver"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
+
+    # Gluetun is our VPN, so you can download torrents safely
+  gluetun:
+    image: qmcgaw/gluetun:v3.40.3
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp  # HTTP proxy
+      - 8388:8388/tcp  #Shadowsocks
+      - 8388:8388/udp  #Shadowsocks
+      - 8003:8000/tcp  #Admin
+      - 8081:8081/tcp  #gluetun
+      - 8082:8080/tcp  #gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE}
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_PROVIDER=protonvpn
+      - PORT_FORWARD_ONLY=on
+      - FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/24
+      - SERVER_COUNTRIES=Netherlands
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.18
+    labels:
+      - "traefik.enable=true"
+      # Note: Traefik talks to Gluetun, which forwards to qBit
+      - "traefik.http.routers.qbit.rule=Host(`qbit.erwanleboucher.dev`)"
+      - "traefik.http.routers.qbit.entrypoints=websecure"
+      - "traefik.http.routers.qbit.tls.certresolver=myresolver"
+      - "traefik.http.routers.qbit.service=qbit"
+      - "traefik.http.services.qbit.loadbalancer.server.port=8081"
+      # Note: Traefik talks to Gluetun, which forwards to sabnzbd
+      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.erwanleboucher.dev`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
+      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
+      - "traefik.http.routers.sabnzbd.service=sabnzbd"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:4.5.5-ls238
+    container_name: sabnzbd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/Paris
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/sabnzbd:/config
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+
+  # qBitorrent is used to download torrents
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:4.6.3
+    container_name: qbittorrent
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - WEBUI_PORT=8081
+      - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/qbittorrent:/config
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+
+  # Sonarr is used to query, add downloads to the download queue and index TV shows
+  # https://sonarr.tv/
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:4.0.16.2944-ls299
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/sonarr:/config
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.13
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+  jellysearch:
+    image: domistyle/jellysearch:latest
+    container_name: jellysearch
+    restart: unless-stopped
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/jellyfin/data:/config:ro
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      INDEX_CRON: "0 0 0/2 ? * * *"
+      MEILI_URL: "http://meilisearch:7700"
+      JELLYFIN_URL: "http://jellyfin:8096"
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.19
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.jellysearch.loadbalancer.server.port=5000
+      - traefik.http.routers.jellysearch.rule=Host(`watch.erwanleboucher.dev`) && (QueryRegexp(`searchTerm`, `(.*?)`) || QueryRegexp(`SearchTerm`, `(.*?)`))
+      - "traefik.http.routers.jellysearch.entrypoints=websecure"
+      - "traefik.http.routers.jellysearch.tls.certresolver=myresolver"
+      - "traefik.http.routers.jellysearch.priority=100"
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.9
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.21
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/meili_data:/meili_data
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+
+  # Radarr is used to query, add downloads to the download queue and index Movies
+  # https://radarr.video/
+  radarr:
+    image: lscr.io/linuxserver/radarr:6.0.4.10291-ls288
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/radarr:/config
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.14
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+
+  autobrr:
+    container_name: autobrr
+    image: ghcr.io/autobrr/autobrr:v1.70
+    restart: unless-stopped
+    ports:
+      - 7474:7474
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.24
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/autobrr:/config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.autobrr.rule=Host(`autobrr.erwanleboucher.dev`)"
+      - "traefik.http.routers.autobrr.entrypoints=websecure"
+      - "traefik.http.routers.autobrr.tls.certresolver=myresolver"
+      - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
+  # Bazarr is used to download and categorize subtitles
+  # https://www.bazarr.media/
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:v1.5.3-ls325
+    container_name: bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/bazarr:/config
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.16
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bazarr.rule=Host(`bazarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.tls.certresolver=myresolver"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+  profilarr:
+    image: santiagosayshey/profilarr:beta
+    container_name: profilarr
+    volumes:
+        - ${INSTALL_DIRECTORY}/config/profilarr:/config # Replace with your actual path
+    environment:
+        - TZ=Europe/Paris
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.profilarr.rule=Host(`profilarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.profilarr.entrypoints=websecure"
+      - "traefik.http.routers.profilarr.tls.certresolver=myresolver"
+      - "traefik.http.services.profilarr.loadbalancer.server.port=6868"
+  qbitmanage:
+    container_name: qbitmanage
+    image: ghcr.io/stuffanthings/qbit_manage:v4.6.5
+    volumes:
+      - ${MEDIA_DIRECTORY}:/data # give qBitManage access to our torrents
+      - ${INSTALL_DIRECTORY}/config/qbitmanage:/config # mount our config file (we will create next) into the container
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - QBIT_USER=${QBIT_USER} # allow qBitManage to communicate with qBitTorrent's API
+      - QBIT_PASS=${QBIT_PASS}
+      - QBT_WEB_SERVER=false # disable the web UI and API. We can manage this with just a config file!
+      - QBT_CONFIG_DIR=/config # Ensure qBitManage can find our mounted config file
+      - QBT_SCHEDULE=180 # run the process every 180 minutes
+      - QBT_STARTUP_DELAY=15 # wait 15 seconds after startup before running, to ensure qBitTorrent is up as well!s
+      - QBT_TAG_NOHARDLINKS=true # tag files without hardlinks
+      - QBT_SHARE_LIMITS=true # apply share limits to files without hardlinks
+      - QBT_DRY_RUN=false
+
+  # Prowlarr is our torrent indexer/searcher. Sonarr/Radarr use Prowlarr as a source
+  # https://prowlarr.com/
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls133
+    container_name: prowlarr
+    ports:
+       - 9696:9696
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${INSTALL_DIRECTORY}/config/prowlarr:/config
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.17
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls.certresolver=myresolver"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+
+  jellyseerr:
+    image: seerr/seerr:develop
+    init: true
+    container_name: jellyseerr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - LOG_LEVEL=debug
+      - TZ=Europe/Paris
+    ports:
+      - 5055:5055
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/jellyseer:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.25
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyseerr.rule=Host(`request.erwanleboucher.dev`)"
+      - "traefik.http.routers.jellyseerr.entrypoints=websecure"
+      - "traefik.http.routers.jellyseerr.tls.certresolver=myresolver"
+      - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_FILE=${LOG_FILE:-none}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/London
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/flaresolver:/config
+    restart: unless-stopped
+    networks:
+        yams_network:
+          ipv4_address: 172.20.0.26
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+
+  tunnel:
+    image: cloudflare/cloudflared:2025.11.1
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN} # Add to .env
+    networks:
+      - yams_network
+
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:2025.11.3"
+    volumes:
+      - ./config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    cap_add:
+    - NET_ADMIN
+    - NET_RAW
+    restart: unless-stopped
+    network_mode: host
+    privileged: true
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    environment:
+      TZ: Europe/Paris
+
+  ha-linky:
+    build:
+      context: ./ha-linky
+      dockerfile: standalone.Dockerfile
+    container_name: ha-linky
+    depends_on:
+      - homeassistant
+    restart: unless-stopped
+    environment:
+      - SUPERVISOR_TOKEN=${SUPERVISOR_TOKEN}
+      - WS_URL=ws://192.168.1.40:8123/api/websocket
+      - TZ=Europe/Paris
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/ha-linky:/data
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.27
+
+  ollama:
+    image: ollama/ollama:0.13.0
+    container_name: ollama
+    restart: unless-stopped
+    devices:
+      - /dev/dri:/dev/dri
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_NUM_THREADS=2
+      - OLLAMA_KEEP_ALIVE=0
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    volumes:
+      # Persistent storage for downloaded models
+      - ${INSTALL_DIRECTORY}/config/ollama:/root/.ollama
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.50 # Fixed IP for stability
+
+  # Open WebUI: The ChatGPT-like Interface
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:v0.6.40
+    container_name: open-webui
+    restart: unless-stopped
+
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/open-webui:/app/backend/data
+    environment:
+      # Connects to the Ollama container internally
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_AUTH=true
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.51
+    labels:
+      - "traefik.enable=true"
+      # DOMAIN: ai.erwanleboucher.dev
+      - "traefik.http.routers.open-webui.rule=Host(`ai.erwanleboucher.dev`)"
+      - "traefik.http.routers.open-webui.entrypoints=websecure"
+      - "traefik.http.routers.open-webui.tls.certresolver=myresolver"
+      - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
+  # Portainer helps debugging and monitors the containers
+  portainer:
+    image: portainer/portainer-ce:2.33.5-alpine
+    container_name: portainer
+    ports:
+      - 9000:9000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${INSTALL_DIRECTORY}/config/portainer:/data
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.23
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.erwanleboucher.dev`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls.certresolver=myresolver"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+  beszel:
+    image: 'henrygd/beszel:0.16'
+    container_name: beszel
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.30
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/beszel_data:/beszel_data
+      - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
+    ports:
+      - "8090:8090"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`monitor.erwanleboucher.dev`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.tls.certresolver=myresolver"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+
+  beszel-agent:
+    image: henrygd/beszel-agent-intel:0.16
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - CAP_PERFMON
+      - SYS_RAWIO # required for S.M.A.R.T. data
+      - SYS_ADMIN # required for NVMe S.M.A.R.T. data
+    devices:
+      - /dev/dri/card0:/dev/dri/card0
+      - /dev/sda:/dev/sda
+      - /dev/nvme0:/dev/nvme0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${INSTALL_DIRECTORY}/config/beszel_agent_data:/var/lib/beszel-agent
+      # monitor other disks / partitions by mounting a folder in /extra-filesystems
+      - /:/extra/filesystem:ro
+      - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+      - /srv/media/.beszel:/extra-filesystems/sda__Media:ro
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      KEY: ${BESZEL_KEY}
+      TOKEN: ${BESZEL_TOKEN}
+      HUB_URL: http://192.168.1.40:8090
+  postgres:
+    image: postgres:16
+    restart: always
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.41
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_NON_ROOT_USER
+      - POSTGRES_NON_ROOT_PASSWORD
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/postgres/db:/var/lib/postgresql/data
+      - ${INSTALL_DIRECTORY}/config/postgres/init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:1.123.0
+    restart: always
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_NON_ROOT_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_NON_ROOT_PASSWORD}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_RUNNERS_ENABLED=true
+    links:
+      - postgres
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/n8n:/home/node/.n8n
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.40
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`n8n.erwanleboucher.dev`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls.certresolver=myresolver"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+
+  # Watchtower is going to keep our instances updated
+  watchtower:
+    image: nickfedor/watchtower:1.12.3
+    container_name: watchtower
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * * # Check daily at 4am
+      - WATCHTOWER_MONITOR_ONLY=true
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=discord://ittcuGYpRo6XP1SyEYZhWv6VUp6AZjtrmu3V_dIUQ9Bp4OqOIAbBPmDyjNh-aLgR7Uvh@1445142964794953910
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.20
+networks:
+  yams_network:
+    name: yams_network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+  default:
+    external: true
+    name: yams_network
