@@ -12,6 +12,23 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: uptime-kuma
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: uptime-kuma
+            patch: |
+              - op: add
+                path: /spec/template/spec/hostAliases
+                value:
+                  - ip: "192.168.1.40"
+                    hostnames:
+                    - "home.erwanleboucher.dev"
+                    - "watch.erwanleboucher.dev"
+                    - "sonarr.erwanleboucher.dev"
+                    - "radarr.erwanleboucher.dev"
+                    - "dns.erwanleboucher.dev"
   values:
     image:
       repository: louislam/uptime-kuma
@@ -31,11 +48,25 @@ spec:
       annotations:
         metallb.universe.tf/allow-shared-ip: "uptime-vip"
 
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-production
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      hosts:
+        - host: status.erwanleboucher.dev
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: uptime-kuma-tls-secret
+          hosts:
+            - status.erwanleboucher.dev
 
     # Mariadb configurations
     mariadb:
       enabled: true
-
 
     resources:
       limits:
