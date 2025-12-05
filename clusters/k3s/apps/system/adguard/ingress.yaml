@@ -23,4 +23,4 @@ spec:
                 # ⚠️ Points to the Primary-Only service
                 name: adguard-primary-internal
                 port:
-                  number: 80
+                  number: 3000
