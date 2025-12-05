@@ -26,11 +26,6 @@ spec:
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
-          dnsPolicy: "None"
-          dnsConfig:
-            nameservers:
-              - 1.1.1.1
-              - 1.0.0.1
 
         containers:
           # Gluetun VPN container (network provider)
@@ -94,6 +89,10 @@ spec:
                 value: "8081"
               - name: DISABLE_IPV6
                 value: "yes"
+              - name: HEALTH_VPN_DURATION_INITIAL
+                value: "60s"
+              - name: HEALTH_VPN_DURATION_ADDITION
+                value: "30s"
 
             resources:
               requests:
