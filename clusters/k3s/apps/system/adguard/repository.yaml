@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: adguard-community
+  namespace: adguard
+spec:
+  interval: 1h
+  url: https://k8s-at-home.com/charts/ # Note: This repo is archived, use the new one below if possible
+  # Better alternative (official-ish community fork):
+  # url: https://adguard-community.github.io/helm-charts

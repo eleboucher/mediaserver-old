@@ -1,0 +1,205 @@
+Directory structure:
+└── adguard/
+    ├── adguard-cert.yaml
+    ├── backup-values.yaml
+    ├── primary-values.yml
+    └── sync-bot.yaml
+
+================================================
+FILE: adguard-cert.yaml
+================================================
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: adguard-tls
+  namespace: adguard
+spec:
+  secretName: adguard-tls-secret # K8s will save the cert here
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: dns.erwanleboucher.dev
+  dnsNames:
+  - dns.erwanleboucher.dev
+
+
+
+================================================
+FILE: backup-values.yaml
+================================================
+nodeSelector:
+  kubernetes.io/hostname: "k3s"
+
+# 2. Networking (Identical to Primary)
+service:
+  main:
+    type: ClusterIP
+    ports:
+      http:
+        port: 80
+  dns-tcp:
+    enabled: true
+    type: ClusterIP
+    externalTrafficPolicy: null
+    ports:
+      dns-tcp:
+        enabled: true
+        port: 53
+        protocol: TCP
+  dns-udp:
+    enabled: true
+    type: ClusterIP
+    externalTrafficPolicy: null
+    ports:
+      dns-udp:
+        enabled: true
+        port: 53
+        protocol: UDP
+
+# 3. Persistence (Save data to Freebox VM Disk)
+# We use the same "local-path" class, but k3s knows to put it on the Freebox's disk
+persistence:
+  config:
+    enabled: true
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 1Gi
+  data:
+    enabled: true
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 5Gi # Smaller disk is fine for backup
+  tls:
+    enabled: true
+    type: secret
+    name: adguard-tls-secret
+    mountPath: /opt/adguardhome/ssl
+    readOnly: true
+# 4. Replica Mode
+# This doesn't strictly change the config, but reminds us this is the passive node.
+env:
+  TZ: "Europe/Paris"
+
+
+config: |
+  tls:
+    enabled: true
+    server_name: dns.erwanleboucher.dev
+    force_https: false
+    port_https: 443
+    port_dns_over_tls: 853
+    port_dns_over_quic: 784
+    allow_unencrypted_doh: false
+    certificate_chain: /opt/adguardhome/ssl/tls.crt
+    private_key: /opt/adguardhome/ssl/tls.key
+
+
+
+================================================
+FILE: primary-values.yml
+================================================
+# ------------------------------------------------
+# PRIMARY ADGUARD (N150)
+# ------------------------------------------------
+
+# 1. Pin to the N150 Node
+nodeSelector:
+  kubernetes.io/hostname: "home"
+
+# 2. Networking (Internal Only)
+# We use ClusterIP because MetalLB will sit in front of this as the single VIP.
+service:
+  main:
+    type: ClusterIP
+    ports:
+      http:
+        port: 80 # Admin Dashboard
+  dns-tcp:
+    enabled: true
+    type: ClusterIP
+    externalTrafficPolicy: null
+    ports:
+      dns-tcp:
+        enabled: true
+        port: 53
+        protocol: TCP
+  dns-udp:
+    enabled: true
+    type: ClusterIP
+    externalTrafficPolicy: null
+    ports:
+      dns-udp:
+        enabled: true
+        port: 53
+        protocol: UDP
+
+# 3. Persistence (Save data to N150 NVMe)
+persistence:
+  config:
+    enabled: true
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 1Gi
+  data:
+    enabled: true
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 10Gi
+  tls:
+    enabled: true
+    type: secret
+    name: adguard-tls-secret
+    mountPath: /opt/adguardhome/ssl
+    readOnly: true
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+
+config: |
+  tls:
+    enabled: true
+    server_name: dns.erwanleboucher.dev
+    force_https: false
+    port_https: 443
+    port_dns_over_tls: 853
+    port_dns_over_quic: 784
+    allow_unencrypted_doh: false
+    certificate_chain: /opt/adguardhome/ssl/tls.crt
+    private_key: /opt/adguardhome/ssl/tls.key
+
+
+
+================================================
+FILE: sync-bot.yaml
+================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguard-sync
+  namespace: adguard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adguard-sync
+  template:
+    metadata:
+      labels:
+        app: adguard-sync
+    spec:
+      containers:
+        - name: sync
+          image: ghcr.io/bakito/adguardhome-sync
+          env:
+            # We use the internal K8s DNS names to talk to specific pods
+            - name: ORIGIN_URL
+              value: "http://adguard-primary-adguard-home"
+            - name: REPLICA_URL
+              value: "http://adguard-backup-adguard-home"
+            - name: CRON
+              value: "*/1 * * * *"
+            - name: LOG_LEVEL
+              value: "info"
+
+
