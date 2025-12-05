@@ -54,13 +54,10 @@ spec:
               postStart:
                 exec:
                   command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
-
             securityContext:
               capabilities:
                 add:
                   - NET_ADMIN
-                  - NET_RAW
-
             env:
               - name: VPN_SERVICE_PROVIDER
                 valueFrom:
