@@ -1,3 +1,4 @@
+
 ---
 # All ingresses use cert-manager annotations for automatic certificate creation
 # Each service gets its own certificate

@@ -1,6 +1,6 @@
 ---
 # External services for Docker Compose containers
-# These create Kubernetes Services that point to Docker container IPs
+# Using externalName to route to Docker bridge network from K3s
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -26,7 +26,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.7
+      - ip: 192.168.1.40
     ports:
       - port: 8096
 ---
@@ -50,7 +50,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.13
+      - ip: 192.168.1.40
     ports:
       - port: 8989
 ---
@@ -74,7 +74,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.14
+      - ip: 192.168.1.40
     ports:
       - port: 7878
 ---
@@ -98,7 +98,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.17
+      - ip: 192.168.1.40
     ports:
       - port: 9696
 ---
@@ -122,7 +122,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.16
+      - ip: 192.168.1.40
     ports:
       - port: 6767
 ---
@@ -146,7 +146,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.18  # Gluetun IP
+      - ip: 192.168.1.40  # Gluetun IP
     ports:
       - port: 8081
 ---
@@ -170,7 +170,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.23
+      - ip: 192.168.1.40
     ports:
       - port: 9000
 ---
@@ -194,7 +194,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.25
+      - ip: 192.168.1.40
     ports:
       - port: 5055
 ---
@@ -218,7 +218,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.24
+      - ip: 192.168.1.40
     ports:
       - port: 7474
 ---
@@ -242,7 +242,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.30
+      - ip: 192.168.1.40
     ports:
       - port: 8090
 ---
@@ -266,7 +266,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.40
+      - ip: 192.168.1.40
     ports:
       - port: 5678
 ---
@@ -290,7 +290,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.51
+      - ip: 192.168.1.40
     ports:
       - port: 8080
 ---
@@ -314,7 +314,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.5
+      - ip: 192.168.1.40
     ports:
       - port: 5690
 ---
@@ -338,7 +338,7 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.18  # Gluetun IP
+      - ip: 192.168.1.40  # Gluetun IP
     ports:
       - port: 8080
 ---
@@ -362,6 +362,6 @@ metadata:
   namespace: docker-services
 subsets:
   - addresses:
-      - ip: 172.20.0.4
+      - ip: 192.168.1.40
     ports:
       - port: 6868
