@@ -92,11 +92,6 @@ spec:
                   secretKeyRef:
                     name: vpn-config
                     key: PORT_FORWARD_ONLY
-              - name: FIREWALL_OUTBOUND_SUBNETS
-                valueFrom:
-                  secretKeyRef:
-                    name: vpn-config
-                    key: FIREWALL_OUTBOUND_SUBNETS
               - name: SERVER_COUNTRIES
                 valueFrom:
                   secretKeyRef:
