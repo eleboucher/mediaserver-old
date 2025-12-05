@@ -14,7 +14,8 @@
       "Bash(git push)",
       "Bash(kubectl run:*)",
       "Bash(flux reconcile kustomization:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(kubectl exec:*)"
     ],
     "deny": [],
     "ask": []
