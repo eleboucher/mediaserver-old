@@ -7,9 +7,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 8082
-      targetPort: 8082
-      protocol: TCP
+  - port: 8082
+    targetPort: 8082
+    protocol: TCP
 ---
 apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
@@ -20,8 +20,8 @@ metadata:
     kubernetes.io/service-name: sabnzbd
 addressType: IPv4
 endpoints:
-  - addresses:
-      - 192.168.1.40
+- addresses:
+  - 192.168.1.40
 ports:
-  - port: 8082
-    protocol: TCP
+- port: 8082
+  protocol: TCP

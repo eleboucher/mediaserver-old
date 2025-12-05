@@ -22,4 +22,4 @@ spec:
           service:
             name: profilarr
             port:
-              number: 6868
+              number: 3001
