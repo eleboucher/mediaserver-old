@@ -5,9 +5,9 @@
  "main": {
   "apiKey": "MTc2Mzc1NjA3MDcwMDQ0YWY4OWY4LTkwZTUtNGZhMS04OTY3LWE1Zjc3YzBhOTljNw==",
   "applicationTitle": "Jellyseerr",
-  "applicationUrl": "",
-  "cacheImages": false,
-  "defaultPermissions": 8388640,
+  "applicationUrl": "https://request.erwanleboucher.dev",
+  "cacheImages": true,
+  "defaultPermissions": 8388768,
   "defaultQuotas": {
    "movie": {
     "quotaLimit": 0,
@@ -20,7 +20,7 @@
   },
   "hideAvailable": false,
   "hideBlacklisted": false,
-  "localLogin": true,
+  "localLogin": false,
   "mediaServerLogin": true,
   "newPlexLogin": true,
   "discoverRegion": "",
@@ -30,7 +30,7 @@
   "blacklistedTagsLimit": 50,
   "mediaServerType": 2,
   "partialRequestsEnabled": true,
-  "enableSpecialEpisodes": false,
+  "enableSpecialEpisodes": true,
   "locale": "en",
   "youtubeUrl": ""
  },
@@ -47,7 +47,7 @@
   "port": 8096,
   "useSsl": false,
   "urlBase": "",
-  "externalHostname": "",
+  "externalHostname": "https://watch.erwanleboucher.dev",
   "jellyfinForgotPasswordUrl": "",
   "libraries": [
    {
@@ -74,14 +74,16 @@
    "port": 7878,
    "apiKey": "df673502c53e41e1b58c60b4f9dc97e9",
    "useSsl": false,
-   "activeProfileId": 1,
-   "activeProfileName": "Any",
+   "baseUrl": "",
+   "activeProfileId": 11,
+   "activeProfileName": "2160p Quality [Dictionarry]",
    "activeDirectory": "/data/movies",
    "is4k": false,
    "minimumAvailability": "released",
    "tags": [],
    "isDefault": true,
-   "syncEnabled": false,
+   "externalUrl": "https://radarr.erwanleboucher.dev",
+   "syncEnabled": true,
    "preventSearch": false,
    "tagRequests": false,
    "id": 0
@@ -94,8 +96,9 @@
    "port": 8989,
    "apiKey": "38ebf8ff49c54a76a5039a943ad08577",
    "useSsl": false,
-   "activeProfileId": 1,
-   "activeProfileName": "Any",
+   "baseUrl": "",
+   "activeProfileId": 10,
+   "activeProfileName": "1080p Efficient [Dictionarry]",
    "activeDirectory": "/data/tvshows",
    "activeAnimeProfileId": 1,
    "activeAnimeProfileName": "Any",
@@ -105,7 +108,8 @@
    "is4k": false,
    "isDefault": true,
    "enableSeasonFolders": true,
-   "syncEnabled": false,
+   "externalUrl": "https://sonarr.erwanleboucher.dev",
+   "syncEnabled": true,
    "preventSearch": false,
    "tagRequests": false,
    "id": 0
@@ -132,7 +136,7 @@
    },
    "discord": {
     "enabled": true,
-    "types": 2,
+    "types": 10,
     "options": {
      "webhookUrl": "https://discord.com/api/webhooks/1441534637477204122/mcW0cfglMgt8bB6Gp-PqvxJ__dqX8nQBMYAld4ZF4HOgX19VYAeqoU55aoR_MbACrvcu",
      "webhookRoleId": "",
@@ -247,7 +251,7 @@
  "network": {
   "csrfProtection": false,
   "forceIpv4First": false,
-  "trustProxy": false,
+  "trustProxy": true,
   "proxy": {
    "enabled": false,
    "hostname": "",
