@@ -56,47 +56,47 @@ services:
       - TZ=${TZ}
 
   # Gluetun is our VPN, so you can download torrents safely
-  gluetun:
-    image: qmcgaw/gluetun:v3.40.3
-    container_name: gluetun
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    ports:
-      - 8888:8888/tcp  # HTTP proxy
-      - 8388:8388/tcp  #Shadowsocks
-      - 8388:8388/udp  #Shadowsocks
-      - 8003:8000/tcp  #Admin
-      - 8081:8081/tcp  #gluetun
-      - 8082:8080/tcp  #gluetun
-    environment:
-      - VPN_SERVICE_PROVIDER=${VPN_SERVICE}
-      - VPN_TYPE=wireguard
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
-      - VPN_PORT_FORWARDING=on
-      - VPN_PORT_FORWARDING_PROVIDER=protonvpn
-      - PORT_FORWARD_ONLY=on
-      - FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/24
-      - SERVER_COUNTRIES=Netherlands
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.18
+  # gluetun:
+  #   image: qmcgaw/gluetun:v3.40.3
+  #   container_name: gluetun
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
+  #   ports:
+  #     - 8888:8888/tcp  # HTTP proxy
+  #     - 8388:8388/tcp  #Shadowsocks
+  #     - 8388:8388/udp  #Shadowsocks
+  #     - 8003:8000/tcp  #Admin
+  #     - 8081:8081/tcp  #gluetun
+  #     - 8082:8080/tcp  #gluetun
+  #   environment:
+  #     - VPN_SERVICE_PROVIDER=${VPN_SERVICE}
+  #     - VPN_TYPE=wireguard
+  #     - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+  #     - VPN_PORT_FORWARDING=on
+  #     - VPN_PORT_FORWARDING_PROVIDER=protonvpn
+  #     - PORT_FORWARD_ONLY=on
+  #     - FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/24
+  #     - SERVER_COUNTRIES=Netherlands
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.18
 
-  sabnzbd:
-    image: lscr.io/linuxserver/sabnzbd:4.5.5-ls238
-    container_name: sabnzbd
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=Europe/Paris
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${MEDIA_DIRECTORY}:/data
-      - ${INSTALL_DIRECTORY}/config/sabnzbd:/config
-    restart: unless-stopped
-    network_mode: "service:gluetun"
+  # sabnzbd:
+  #   image: lscr.io/linuxserver/sabnzbd:4.5.5-ls238
+  #   container_name: sabnzbd
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=Europe/Paris
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ${MEDIA_DIRECTORY}:/data
+  #     - ${INSTALL_DIRECTORY}/config/sabnzbd:/config
+  #   restart: unless-stopped
+  #   network_mode: "service:gluetun"
 
   # qBitorrent is used to download torrents
   # qbittorrent:

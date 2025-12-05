@@ -75,7 +75,21 @@ spec:
                   secretKeyRef:
                     name: vpn-config
                     key: WIREGUARD_PRIVATE_KEY
-
+              - name: VPN_PORT_FORWARDING
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_PORT_FORWARDING
+              - name: VPN_PORT_FORWARDING_PROVIDER
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: VPN_PORT_FORWARDING_PROVIDER
+              - name: PORT_FORWARD_ONLY
+                valueFrom:
+                  secretKeyRef:
+                    name: vpn-config
+                    key: PORT_FORWARD_ONLY
               - name: SERVER_COUNTRIES
                 valueFrom:
                   secretKeyRef:
@@ -84,7 +98,7 @@ spec:
               - name: TZ
                 value: "Europe/Paris"
               - name: FIREWALL_INPUT_PORTS
-                value: "8080,9999"
+                value: "8081,9999"
               - name: FIREWALL_OUTBOUND_SUBNETS
                 value: "10.42.0.0/16,10.43.0.0/16,192.168.1.0/24"
               - name: DNS_KEEP_NAMESERVER
