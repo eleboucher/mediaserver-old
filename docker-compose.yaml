@@ -13,12 +13,6 @@ services:
       - TZ=${TZ} #Set your timezone here
     networks:
       - yams_network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wizarr.rule=Host(`wizarr.erwanleboucher.dev`)"
-      - "traefik.http.routers.wizarr.entrypoints=websecure"
-      - "traefik.http.routers.wizarr.tls.certresolver=myresolver"
-      - "traefik.http.services.wizarr.loadbalancer.server.port=5690"
   # jellyfin is used to serve your media to the client devices
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:10.11.4ubu2404-ls10
@@ -40,12 +34,6 @@ services:
     networks:
       - yams_network
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`watch.erwanleboucher.dev`)"
-      - "traefik.http.routers.jellyfin.entrypoints=websecure"
-      - "traefik.http.routers.jellyfin.tls.certresolver=myresolver"
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
 
     # Gluetun is our VPN, so you can download torrents safely
   gluetun:
@@ -75,20 +63,6 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.18
-    labels:
-      - "traefik.enable=true"
-      # Note: Traefik talks to Gluetun, which forwards to qBit
-      - "traefik.http.routers.qbit.rule=Host(`qbit.erwanleboucher.dev`)"
-      - "traefik.http.routers.qbit.entrypoints=websecure"
-      - "traefik.http.routers.qbit.tls.certresolver=myresolver"
-      - "traefik.http.routers.qbit.service=qbit"
-      - "traefik.http.services.qbit.loadbalancer.server.port=8081"
-      # Note: Traefik talks to Gluetun, which forwards to sabnzbd
-      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.erwanleboucher.dev`)"
-      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
-      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
-      - "traefik.http.routers.sabnzbd.service=sabnzbd"
-      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
 
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:4.5.5-ls238
@@ -138,12 +112,8 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.13
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.erwanleboucher.dev`)"
-      - "traefik.http.routers.sonarr.entrypoints=websecure"
-      - "traefik.http.routers.sonarr.tls.certresolver=myresolver"
-      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+
+
   jellysearch:
     image: domistyle/jellysearch:latest
     container_name: jellysearch
@@ -158,13 +128,7 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.19
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.jellysearch.loadbalancer.server.port=5000
-      - traefik.http.routers.jellysearch.rule=Host(`watch.erwanleboucher.dev`) && (QueryRegexp(`searchTerm`, `(.*?)`) || QueryRegexp(`SearchTerm`, `(.*?)`))
-      - "traefik.http.routers.jellysearch.entrypoints=websecure"
-      - "traefik.http.routers.jellysearch.tls.certresolver=myresolver"
-      - "traefik.http.routers.jellysearch.priority=100"
+
 
   meilisearch:
     image: getmeili/meilisearch:v1.9
@@ -195,12 +159,6 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.14
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`radarr.erwanleboucher.dev`)"
-      - "traefik.http.routers.radarr.entrypoints=websecure"
-      - "traefik.http.routers.radarr.tls.certresolver=myresolver"
-      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
 
   autobrr:
     container_name: autobrr
@@ -217,12 +175,8 @@ services:
         ipv4_address: 172.20.0.24
     volumes:
       - ${INSTALL_DIRECTORY}/config/autobrr:/config
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.autobrr.rule=Host(`autobrr.erwanleboucher.dev`)"
-      - "traefik.http.routers.autobrr.entrypoints=websecure"
-      - "traefik.http.routers.autobrr.tls.certresolver=myresolver"
-      - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
+
+
   # Bazarr is used to download and categorize subtitles
   # https://www.bazarr.media/
   bazarr:
@@ -241,12 +195,7 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.16
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.bazarr.rule=Host(`bazarr.erwanleboucher.dev`)"
-      - "traefik.http.routers.bazarr.entrypoints=websecure"
-      - "traefik.http.routers.bazarr.tls.certresolver=myresolver"
-      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+
   profilarr:
     image: santiagosayshey/profilarr:beta
     container_name: profilarr
@@ -255,12 +204,8 @@ services:
     environment:
         - TZ=Europe/Paris
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.profilarr.rule=Host(`profilarr.erwanleboucher.dev`)"
-      - "traefik.http.routers.profilarr.entrypoints=websecure"
-      - "traefik.http.routers.profilarr.tls.certresolver=myresolver"
-      - "traefik.http.services.profilarr.loadbalancer.server.port=6868"
+
+
   qbitmanage:
     container_name: qbitmanage
     image: ghcr.io/stuffanthings/qbit_manage:v4.6.5
@@ -300,12 +245,7 @@ services:
     dns:
       - 1.1.1.1
       - 1.0.0.1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.erwanleboucher.dev`)"
-      - "traefik.http.routers.prowlarr.entrypoints=websecure"
-      - "traefik.http.routers.prowlarr.tls.certresolver=myresolver"
-      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+
 
   jellyseerr:
     image: seerr/seerr:develop
@@ -330,12 +270,7 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.25
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jellyseerr.rule=Host(`request.erwanleboucher.dev`)"
-      - "traefik.http.routers.jellyseerr.entrypoints=websecure"
-      - "traefik.http.routers.jellyseerr.tls.certresolver=myresolver"
-      - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+
 
   flaresolverr:
     # DockerHub mirror flaresolverr/flaresolverr:latest
@@ -444,13 +379,7 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.51
-    labels:
-      - "traefik.enable=true"
-      # DOMAIN: ai.erwanleboucher.dev
-      - "traefik.http.routers.open-webui.rule=Host(`ai.erwanleboucher.dev`)"
-      - "traefik.http.routers.open-webui.entrypoints=websecure"
-      - "traefik.http.routers.open-webui.tls.certresolver=myresolver"
-      - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
+
   # Portainer helps debugging and monitors the containers
   portainer:
     image: portainer/portainer-ce:2.33.5-alpine
@@ -465,12 +394,7 @@ services:
     networks:
       yams_network:
         ipv4_address: 172.20.0.23
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.erwanleboucher.dev`)"
-      - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls.certresolver=myresolver"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+
   beszel:
     image: 'henrygd/beszel:0.16'
     container_name: beszel
@@ -483,12 +407,7 @@ services:
       - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
     ports:
       - "8090:8090"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.beszel.rule=Host(`monitor.erwanleboucher.dev`)"
-      - "traefik.http.routers.beszel.entrypoints=websecure"
-      - "traefik.http.routers.beszel.tls.certresolver=myresolver"
-      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+
 
   beszel-agent:
     image: henrygd/beszel-agent-intel:0.16
