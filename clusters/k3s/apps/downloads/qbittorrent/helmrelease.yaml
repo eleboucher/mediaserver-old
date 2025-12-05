@@ -83,6 +83,12 @@ spec:
                     key: SERVER_COUNTRIES
               - name: TZ
                 value: "Europe/Paris"
+              - name: FIREWALL_VPN_INPUT_PORTS
+                value: "8081"
+              - name: FIREWALL_INPUT_PORTS
+                value: "8081"
+              - name: DISABLE_IPV6
+                value: "yes"
 
             resources:
               requests:
