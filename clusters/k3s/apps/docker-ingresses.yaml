@@ -1,5 +1,6 @@
 ---
-# Jellyfin - watch.erwanleboucher.dev
+# All ingresses use cert-manager annotations for automatic certificate creation
+# Each service gets its own certificate
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -12,7 +13,7 @@ spec:
   tls:
     - hosts:
         - watch.erwanleboucher.dev
-      secretName: watch-erwanleboucher-dev-tls
+      secretName: watch-tls
   rules:
     - host: watch.erwanleboucher.dev
       http:
@@ -25,18 +26,19 @@ spec:
                 port:
                   number: 8096
 ---
-# Sonarr - sonarr.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sonarr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - sonarr.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: sonarr-tls
   rules:
     - host: sonarr.erwanleboucher.dev
       http:
@@ -49,18 +51,19 @@ spec:
                 port:
                   number: 8989
 ---
-# Radarr - radarr.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: radarr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - radarr.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: radarr-tls
   rules:
     - host: radarr.erwanleboucher.dev
       http:
@@ -73,18 +76,19 @@ spec:
                 port:
                   number: 7878
 ---
-# Prowlarr - prowlarr.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: prowlarr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - prowlarr.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: prowlarr-tls
   rules:
     - host: prowlarr.erwanleboucher.dev
       http:
@@ -97,18 +101,19 @@ spec:
                 port:
                   number: 9696
 ---
-# Bazarr - bazarr.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: bazarr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - bazarr.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: bazarr-tls
   rules:
     - host: bazarr.erwanleboucher.dev
       http:
@@ -121,18 +126,19 @@ spec:
                 port:
                   number: 6767
 ---
-# qBittorrent - qbit.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: qbittorrent
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - qbit.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: qbit-tls
   rules:
     - host: qbit.erwanleboucher.dev
       http:
@@ -145,18 +151,19 @@ spec:
                 port:
                   number: 8081
 ---
-# Sabnzbd - sabnzbd.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: sabnzbd
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - sabnzbd.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: sabnzbd-tls
   rules:
     - host: sabnzbd.erwanleboucher.dev
       http:
@@ -169,18 +176,19 @@ spec:
                 port:
                   number: 8080
 ---
-# Portainer - portainer.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: portainer
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - portainer.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: portainer-tls
   rules:
     - host: portainer.erwanleboucher.dev
       http:
@@ -193,18 +201,19 @@ spec:
                 port:
                   number: 9000
 ---
-# Jellyseerr - request.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: jellyseerr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - request.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: request-tls
   rules:
     - host: request.erwanleboucher.dev
       http:
@@ -217,18 +226,19 @@ spec:
                 port:
                   number: 5055
 ---
-# Autobrr - autobrr.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: autobrr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - autobrr.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: autobrr-tls
   rules:
     - host: autobrr.erwanleboucher.dev
       http:
@@ -241,18 +251,19 @@ spec:
                 port:
                   number: 7474
 ---
-# Beszel - monitor.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: beszel
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - monitor.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: monitor-tls
   rules:
     - host: monitor.erwanleboucher.dev
       http:
@@ -265,18 +276,19 @@ spec:
                 port:
                   number: 8090
 ---
-# N8N - n8n.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: n8n
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - n8n.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: n8n-tls
   rules:
     - host: n8n.erwanleboucher.dev
       http:
@@ -289,18 +301,19 @@ spec:
                 port:
                   number: 5678
 ---
-# Open WebUI - ai.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: open-webui
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - ai.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: ai-tls
   rules:
     - host: ai.erwanleboucher.dev
       http:
@@ -313,18 +326,19 @@ spec:
                 port:
                   number: 8080
 ---
-# Wizarr - wizarr.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: wizarr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - wizarr.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: wizarr-tls
   rules:
     - host: wizarr.erwanleboucher.dev
       http:
@@ -337,18 +351,19 @@ spec:
                 port:
                   number: 5690
 ---
-# Profilarr - profilarr.erwanleboucher.dev
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: profilarr
   namespace: docker-services
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
   ingressClassName: traefik
   tls:
     - hosts:
         - profilarr.erwanleboucher.dev
-      secretName: erwanleboucher-wildcard-tls
+      secretName: profilarr-tls
   rules:
     - host: profilarr.erwanleboucher.dev
       http:
