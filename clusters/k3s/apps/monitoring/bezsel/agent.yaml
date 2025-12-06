@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: beszel-agent
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: "3.6.0"
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      agent:
+        # ⚠️ DaemonSet ensures it runs on EVERY node (N150 + Freebox)
+        type: daemonset
+
+        containers:
+          app:
+            image:
+              repository: henrygd/beszel-agent
+              tag: latest
+            env:
+              - name: PORT
+                value: "45876"
+
+            # Agent needs access to host stats
+            securityContext:
+              privileged: true
+
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+
+    service:
+      app:
+        controller: agent
+        ports:
+          http:
+            port: 45876
+
+    persistence:
+      # Mount root filesystem to read disk usage
+      rootfs:
+        type: hostPath
+        hostPath: /
+        globalMounts:
+          - path: /rootfs
+            readOnly: true

@@ -7,27 +7,59 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: beszel
-      version: "0.9.1" # Check for latest
+      # ⚠️ Use the Universal Chart
+      chart: app-template
+      version: "3.6.0"
       sourceRef:
         kind: HelmRepository
-        name: beszel
-        namespace: monitoring
+        name: bjw-s
+        namespace: flux-system
   values:
-    image:
-      repository: henrygd/beszel
-      tag: latest
+    controllers:
+      beszel:
+        type: deployment
+        replicas: 1
+        strategy: Recreate
 
-    # 1. Service Configuration
+        containers:
+          app:
+            image:
+              repository: henrygd/beszel
+              tag: latest
+            env:
+              - name: TZ
+                value: "Europe/Paris"
+              # Port the application listens on internally
+              - name: PORT
+                value: "8090"
+
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+
     service:
-      main:
+      app:
+        controller: beszel
         ports:
           http:
             port: 8090
 
-    # 2. Ingress (Your Dashboard)
     ingress:
-      main:
+      app:
         enabled: true
         className: traefik
         annotations:
@@ -39,14 +71,13 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - secretName: beszel-tls
             hosts:
               - monitor.erwanleboucher.dev
 
-    # 3. Persistence (Save history)
     persistence:
       data:
         enabled: true
@@ -54,32 +85,3 @@ spec:
         hostPath: /opt/yams/config/beszel
         globalMounts:
           - path: /beszel_data
-
-    # 4. Environment Variables (User/Pass handled in UI on first launch)
-    # but we can set defaults or keys here if needed.
-    env:
-      # Optional: Disable the "first user creation" if you want to automate it via secret
-      # For now, UI setup is easiest.
-      # DISCORD WEBHOOK for system alerts (CPU > 90%, Disk Full)
-      # You can also set this in the UI later easily.
-      - name: DISABLE_Password_AUTH
-        value: "false"
-
-    # 5. The Agent (Runs on every node)
-    agent:
-      enabled: true
-      image:
-        repository: henrygd/beszel-agent
-        tag: latest
-      # Critical for K3s/Linux monitoring
-      securityContext:
-        privileged: true
-      # Mounts for accurate disk/network stats
-      extraVolumeMounts:
-        - name: root-fs
-          mountPath: /rootfs
-          readOnly: true
-      extraVolumes:
-        - name: root-fs
-          hostPath:
-            path: /
