@@ -42,6 +42,10 @@ spec:
                 value: "http://beszel:8090"
             securityContext:
               privileged: true
+              capabilities:
+                add:
+                  - CAP_PERFMON
+                  - SYS_RAWIO
 
             resources:
               requests:
@@ -72,3 +76,9 @@ spec:
         globalMounts:
           - path: /rootfs
             readOnly: true
+      # Mount GPU device for hardware monitoring
+      dri:
+        type: hostPath
+        hostPath: /dev/dri
+        globalMounts:
+          - path: /dev/dri
