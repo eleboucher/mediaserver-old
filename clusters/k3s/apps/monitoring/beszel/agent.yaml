@@ -37,9 +37,26 @@ spec:
                   secretKeyRef:
                     name: beszel-agent-secret
                     key: beszel-hub-token
-
               - name: HUB_URL
                 value: "http://beszel:8090"
+              # Memory calculation method (htop for more accurate reporting)
+              - name: MEM_CALC
+                value: "htop"
+              # Monitor Docker containers via socket
+              - name: DOCKER_HOST
+                value: "unix:///var/run/docker.sock"
+              # Network interfaces to monitor (all by default, use -prefix for blacklist)
+              # - name: NICS
+              #   value: "eth0,wlan*"
+              # Sensors to monitor (all by default, use -prefix for blacklist)
+              # - name: SENSORS
+              #   value: "coretemp,k10temp"
+              # Additional filesystems/disks to monitor
+              # - name: EXTRA_FILESYSTEMS
+              #   value: "sdb,sdc1"
+              # Specify root filesystem device for accurate stats
+              # - name: FILESYSTEM
+              #   value: "/dev/sda1"
             securityContext:
               privileged: true
               capabilities:
@@ -76,9 +93,16 @@ spec:
         globalMounts:
           - path: /rootfs
             readOnly: true
-      # Mount GPU device for hardware monitoring
+      # Mount GPU device for hardware monitoring (Intel/AMD)
       dri:
         type: hostPath
         hostPath: /dev/dri
         globalMounts:
           - path: /dev/dri
+      # Mount Docker socket for container monitoring
+      docker-socket:
+        type: hostPath
+        hostPath: /var/run/docker.sock
+        globalMounts:
+          - path: /var/run/docker.sock
+            readOnly: true
