@@ -88,8 +88,9 @@ config/qbittorrent/*
 config/adguard/work/data/*
 config/open-webui/*
 
-config/wizarr/sessions/*
+config/wizarr/database/sessions/*
 
 *.tar.gz
 
 config/sabnzbd/Downloads/*
+config
