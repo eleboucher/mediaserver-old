@@ -13,14 +13,24 @@ spec:
         kind: HelmRepository
         name: prometheus-community
   values:
-    securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+
     # Prometheus configuration
     prometheus:
       prometheusSpec:
         retention: 7d
+        scrapeInterval: "1m"
+        evaluationInterval: "1m"
+        enableFeatures:
+          - "wal-compression"
+
+        # Tweak the memory settings directly in the app
+        containers:
+          - name: prometheus
+            env:
+              - name: GOMEMLIMIT
+                value: "750MiB"  # Aggressive GC target
+
+
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -32,7 +42,7 @@ spec:
           requests:
             memory: 512Mi
           limits:
-            memory: 2Gi
+            memory: 1Gi
         nodeSelector:
           kubernetes.io/hostname: "home"
         tolerations:
@@ -40,12 +50,15 @@ spec:
             operator: "Equal"
             value: "true"
             effect: "NoSchedule"
-    secrets:
-        - discord-webhook
+
     # Grafana configuration
     grafana:
       enabled: true
       adminPassword: "admin" # Change this after first login!
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       nodeSelector:
         kubernetes.io/hostname: "home"
       tolerations:
@@ -77,11 +90,19 @@ spec:
           hostPath:
             path: /opt/yams/config/grafana
             type: DirectoryOrCreate
-
       extraVolumeMounts:
-          - name: grafana-host-storage
-            mountPath: /var/lib/grafana
-
+        - name: grafana-host-storage
+          mountPath: /var/lib/grafana
+      extraInitContainers:
+        - name: fix-fs-permissions
+          image: busybox:latest
+          command: ["sh", "-c", "chown -R 1000:1000 /var/lib/grafana"]
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+          volumeMounts:
+            - name: grafana-host-storage
+              mountPath: /var/lib/grafana
     # AlertManager configuration with Discord
     alertmanager:
       enabled: true
@@ -94,6 +115,8 @@ spec:
             memory: 128Mi
           limits:
             memory: 256Mi
+      secrets:
+          - discord-webhook
       config:
         global:
           resolve_timeout: 5m
@@ -126,6 +149,12 @@ spec:
           # Drop extremely verbose labels to reduce cardinality
           - action: labeldrop
             regex: (id|image_id|uid|docker_image)
+    kubeApiServer:
+      serviceMonitor:
+        metricRelabelings:
+          - sourceLabels: [__name__]
+            action: drop
+            regex: 'apiserver_request_duration_seconds_bucket|apiserver_response_sizes_bucket'
     # Disable some default exporters to reduce resource usage
     nodeExporter:
       enabled: true
@@ -149,8 +178,6 @@ spec:
     # Disable etcd and scheduler monitoring (not exposed in k3s by default)
     coreDns:
       enabled: false  # Often not needed if you don't debug DNS internals
-    kubeApiServer:
-      enabled: true   # Keep this, it's light
     kubeEtcd:
       enabled: false
     kubeScheduler:
