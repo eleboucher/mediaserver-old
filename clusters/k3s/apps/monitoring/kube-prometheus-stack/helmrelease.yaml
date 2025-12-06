@@ -106,7 +106,7 @@ spec:
 
     # Disable some default exporters to reduce resource usage
     nodeExporter:
-      enabled: false
+      enabled: true
     kubeStateMetrics:
       enabled: true
       nodeSelector:
