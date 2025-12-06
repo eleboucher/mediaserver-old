@@ -13,6 +13,10 @@ spec:
         kind: HelmRepository
         name: prometheus-community
   values:
+    securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
     # Prometheus configuration
     prometheus:
       prometheusSpec:
@@ -36,7 +40,8 @@ spec:
             operator: "Equal"
             value: "true"
             effect: "NoSchedule"
-
+    secrets:
+        - discord-webhook
     # Grafana configuration
     grafana:
       enabled: true
@@ -98,15 +103,30 @@ spec:
           - name: 'null'
           - name: 'discord'
             discord_configs:
-              - webhook_url: 'https://discord.com/api/webhooks/1441792919622385816/uzemqeyrJrbP44rHNxQKr-_E67u9KlHlcrYdiYY-zMaADuvS0HNIg520PS--wEAPFV9b'
+              - webhook_url_file: '/etc/alertmanager/secrets/discord-webhook/webhook-url'
                 title: '{{ template "discord.default.title" . }}'
                 message: '{{ template "discord.default.message" . }}'
         templates:
           - '/etc/alertmanager/config/*.tmpl'
-
+    kubelet:
+      serviceMonitor:
+        cAdvisorMetricRelabelings:
+          # Drop heavy metrics that are rarely used in homelabs
+          - sourceLabels: [__name__]
+            action: drop
+            regex: (container_network_.*|container_fs_.*|container_spec_.*|container_tasks_state|container_memory_failures_total)
+          # Drop extremely verbose labels to reduce cardinality
+          - action: labeldrop
+            regex: (id|image_id|uid|docker_image)
     # Disable some default exporters to reduce resource usage
     nodeExporter:
       enabled: true
+      serviceMonitor:
+        relabelings:
+          # Drop metrics for filesystems you don't care about (tmpfs, etc)
+          - sourceLabels: [mountpoint]
+            regex: /var/lib/kubelet/pods.+
+            action: drop
 
     kubeStateMetrics:
       enabled: true
@@ -119,6 +139,10 @@ spec:
           effect: "NoSchedule"
 
     # Disable etcd and scheduler monitoring (not exposed in k3s by default)
+    coreDns:
+      enabled: false  # Often not needed if you don't debug DNS internals
+    kubeApiServer:
+      enabled: true   # Keep this, it's light
     kubeEtcd:
       enabled: false
     kubeScheduler:
@@ -157,3 +181,13 @@ spec:
       hostRootFsMount:
         enabled: false
         mountPropagation: HostToContainer
+    extraVolumes:
+      - name: grafana-host-storage
+        hostPath:
+          path: /opt/yams/config/grafana
+          type: DirectoryOrCreate
+
+      # 3. Mount the volume to Grafana's data directory
+    extraVolumeMounts:
+        - name: grafana-host-storage
+          mountPath: /var/lib/grafana
