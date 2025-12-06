@@ -41,6 +41,12 @@ spec:
               - name: TZ
                 value: "Europe/Paris"
 
+            resources:
+              requests:
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+
             probes:
               startup:
                 enabled: true
