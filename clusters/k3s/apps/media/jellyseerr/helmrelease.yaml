@@ -46,7 +46,6 @@ spec:
               requests:
                 memory: 256Mi
               limits:
-                cpu: 1000m
                 memory: 1Gi
             probes:
               startup:
