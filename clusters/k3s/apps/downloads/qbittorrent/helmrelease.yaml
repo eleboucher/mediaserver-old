@@ -59,7 +59,6 @@ spec:
                     - -c
                     - |
                       sleep 2
-                      # Delete all existing rules for table 51820
                       while ip rule del table 51820 2>/dev/null; do :; done
                       while ip -6 rule del table 51820 2>/dev/null; do :; done
                       exit 0
