@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: sync
-          image: ghcr.io/bakito/adguardhome-sync:v0.6.2
+          image: ghcr.io/bakito/adguardhome-sync:v0.8.2@sha256:0d8411bfaae9e1e368b9a5ca8f3df28e8f0a335e9975003cc47892c22524ca15
           env:
             # Connect using internal ClusterIP DNS names
             - name: ORIGIN_URL
