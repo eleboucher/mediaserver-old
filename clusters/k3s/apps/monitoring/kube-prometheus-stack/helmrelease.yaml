@@ -75,11 +75,7 @@ spec:
       alertmanagerSpec:
         nodeSelector:
           kubernetes.io/hostname: "home"
-        tolerations:
-          - key: "freebox"
-            operator: "Equal"
-            value: "true"
-            effect: "NoSchedule"
+
         resources:
           requests:
             memory: 128Mi
