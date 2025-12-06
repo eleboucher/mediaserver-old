@@ -1,7 +1,9 @@
+---
+# Standard agent for ARM k3s node
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: beszel-agent
+  name: beszel-agent-standard
   namespace: monitoring
 spec:
   interval: 30m
@@ -22,7 +24,7 @@ spec:
         containers:
           app:
             image:
-              repository: henrygd/beszel-agent-intel
+              repository: henrygd/beszel-agent
               tag: latest
             env:
               - name: LISTEN
@@ -71,6 +73,8 @@ spec:
                 memory: 128Mi
 
     defaultPodOptions:
+      nodeSelector:
+        kubernetes.io/arch: arm64
       tolerations:
       - key: "freebox"
         operator: "Equal"
@@ -92,7 +96,105 @@ spec:
         globalMounts:
           - path: /rootfs
             readOnly: true
-      # Mount GPU device for hardware monitoring (Intel/AMD)
+      # Mount Docker socket for container monitoring
+      docker-socket:
+        type: hostPath
+        hostPath: /var/run/docker.sock
+        globalMounts:
+          - path: /var/run/docker.sock
+            readOnly: true
+
+---
+# Intel GPU-enabled agent for AMD64 home node
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: beszel-agent-intel
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: "3.6.0"
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      agent:
+        type: daemonset
+        pod:
+          hostNetwork: true
+        containers:
+          app:
+            image:
+              repository: henrygd/beszel-agent-intel
+              tag: latest
+            env:
+              - name: LISTEN
+                value: "45876"
+              - name: KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: beszel-agent-secret
+                    key: beszel-api-key
+              - name: TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: beszel-agent-secret
+                    key: beszel-hub-token
+              - name: HUB_URL
+                value: "http://beszel:8090"
+              # Memory calculation method (htop for more accurate reporting)
+              - name: MEM_CALC
+                value: "htop"
+              # Monitor Docker containers via socket
+              - name: DOCKER_HOST
+                value: "unix:///var/run/docker.sock"
+              # Network interfaces - blacklist virtual/container interfaces
+              - name: NICS
+                value: "-veth*,docker*,br-*,flannel*,cni*,kube*,dummy*"
+            securityContext:
+              privileged: true
+              capabilities:
+                add:
+                  - CAP_PERFMON
+                  - SYS_RAWIO
+
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+
+    defaultPodOptions:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      tolerations:
+      - key: "freebox"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+
+    service:
+      app:
+        controller: agent
+        ports:
+          http:
+            port: 45876
+
+    persistence:
+      # Mount root filesystem to read disk usage
+      rootfs:
+        type: hostPath
+        hostPath: /
+        globalMounts:
+          - path: /rootfs
+            readOnly: true
+      # Mount GPU device for Intel GPU monitoring
       dri:
         type: hostPath
         hostPath: /dev/dri
