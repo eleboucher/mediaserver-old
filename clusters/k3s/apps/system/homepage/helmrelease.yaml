@@ -146,7 +146,7 @@ spec:
                     description: Home Automation
                     widget:
                       type: homeassistant
-                      url: http://homeassistant.media:8123
+                      url: http://home-assistant.system:8123
                       key: '{{ "{{" }}HOMEPAGE_VAR_HASS_KEY{{ "}}" }}'
                       custom:
                         - state: sensor.h5075_9d45_temperature
@@ -191,7 +191,7 @@ spec:
                     description: Downloader
                     widget:
                       type: qbittorrent
-                      url: http://qbit.downloads:8081
+                      url: http://qbittorrent.downloads:8081
                       username: '{{ "{{" }}HOMEPAGE_VAR_QBIT_USER{{ "}}" }}'
                       password: '{{ "{{" }}HOMEPAGE_VAR_QBIT_PASS{{ "}}" }}'
 
