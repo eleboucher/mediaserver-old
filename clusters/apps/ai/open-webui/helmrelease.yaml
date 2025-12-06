@@ -61,5 +61,10 @@ spec:
             hosts:
               - ai.erwanleboucher.dev
 
-
+    persistence:
+      config:
+        type: hostPath
+        hostPath: /opt/yams/config/open-webui
+        globalMounts:
+          - path: /config
 

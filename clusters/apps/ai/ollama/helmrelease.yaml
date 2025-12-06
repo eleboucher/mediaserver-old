@@ -42,3 +42,9 @@ spec:
             protocol: TCP
 
 
+    persistence:
+      config:
+        type: hostPath
+        hostPath: /opt/yams/config/ollama
+        globalMounts:
+          - path: /config
