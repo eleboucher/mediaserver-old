@@ -135,7 +135,7 @@ services:
 
 
   jellysearch:
-    image: domistyle/jellysearch:latest
+    image: domistyle/jellysearch:latest@sha256:e758fefa1020c0a6fb2504f48d150f9ed454a5155ca61bf2d89ff9df50ea171d
     container_name: jellysearch
     restart: unless-stopped
     volumes:
@@ -151,7 +151,7 @@ services:
 
 
   meilisearch:
-    image: getmeili/meilisearch:v1.9
+    image: getmeili/meilisearch:v1.28@sha256:71cdfc95cbbe20e99e430f9c955a52f6530833ed25041710fa0b04f8128cfbb3
     restart: unless-stopped
     networks:
       yams_network:
@@ -214,7 +214,7 @@ services:
 
   qbitmanage:
     container_name: qbitmanage
-    image: ghcr.io/stuffanthings/qbit_manage:v4.6.5
+    image: ghcr.io/stuffanthings/qbit_manage:v4.6.5@sha256:4f36632a138b4e5aeab3b765b7f389087bfb140c80dbbec1343eca74dc351245
     volumes:
       - ${MEDIA_DIRECTORY}:/data # give qBitManage access to our torrents
       - ${INSTALL_DIRECTORY}/config/qbitmanage:/config # mount our config file (we will create next) into the container
@@ -313,7 +313,7 @@ services:
 
   homeassistant:
     container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:2025.11.3"
+    image: "ghcr.io/home-assistant/home-assistant:2025.12.1@sha256:4e5e81917192e3fa730948964b19d6e03ff3b9c2694894bc6d6b76769e642055"
     volumes:
       - ./config/homeassistant:/config
       - /etc/localtime:/etc/localtime:ro
@@ -351,7 +351,7 @@ services:
         ipv4_address: 172.20.0.27
 
   ollama:
-    image: ollama/ollama:0.13.0
+    image: ollama/ollama:0.13.1@sha256:8850b8b33936b9fb246e7b3e02849941f1151ea847e5fb15511f17de9589aea1
     container_name: ollama
     restart: unless-stopped
     devices:
@@ -392,7 +392,7 @@ services:
 
   # Portainer helps debugging and monitors the containers
   portainer:
-    image: portainer/portainer-ce:2.33.5-alpine
+    image: portainer/portainer-ce:2.36.0-alpine@sha256:4ebce6829b16b86d8a0982f89ad03f850341274aa0b9050697e5515ddf56c161
     container_name: portainer
     ports:
       - 9000:9000
@@ -406,7 +406,7 @@ services:
         ipv4_address: 172.20.0.23
 
   beszel:
-    image: 'henrygd/beszel:0.16'
+    image: 'henrygd/beszel:0.17@sha256:185142e6c91bd44c77fef6cd31784aee0f782eb1d7193c3ee34a9902a936621c'
     container_name: beszel
     restart: unless-stopped
     networks:
@@ -420,7 +420,7 @@ services:
 
 
   beszel-agent:
-    image: henrygd/beszel-agent-intel:0.16
+    image: henrygd/beszel-agent-intel:0.17@sha256:ed944888731daae9d12c9daaac270745832f13a7eb1ac17b77215a5415190b35
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
@@ -446,7 +446,7 @@ services:
       TOKEN: ${BESZEL_TOKEN}
       HUB_URL: http://192.168.1.40:8090
   postgres:
-    image: postgres:16
+    image: postgres:16@sha256:cf2a05fe40887b721e4b3dbac8fd32673c08292dcc8ba6b62b52b7f640433bd0
     restart: always
     networks:
       yams_network:
@@ -467,7 +467,7 @@ services:
       retries: 10
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.123.0
+    image: docker.n8n.io/n8nio/n8n:1.123.3@sha256:0fe24e854c030088695e4e75afda4d86e52814bb10268968bacd9880c0986862
     restart: always
     environment:
       - DB_TYPE=postgresdb
@@ -497,7 +497,7 @@ services:
 
   # Watchtower is going to keep our instances updated
   watchtower:
-    image: nickfedor/watchtower:1.12.3
+    image: nickfedor/watchtower:1.12.3@sha256:41dcdaee038d1551df6123c476aa9ff51b465843927fa72abf2f1aeb85cea3a5
     container_name: watchtower
     environment:
       - WATCHTOWER_CLEANUP=true
