@@ -50,12 +50,12 @@ spec:
                 value: "-veth*,docker*,br-*,flannel*,cni*,kube*,dummy*"
               # Sensors - monitor all available temperature sensors
               # Uncomment to filter specific sensors
-              - name: SENSORS
-                value: "coretemp,k10temp"
+              # - name: SENSORS
+              #   value: "coretemp,k10temp"
               # Additional filesystems/disks to monitor beyond root
               # Uncomment and adjust if you have additional disks to monitor
-              - name: EXTRA_FILESYSTEMS
-                value: "sdb,sdc1,nvme0n1"
+              # - name: EXTRA_FILESYSTEMS
+              #   value: "sdb,sdc1,nvme0n1"
             securityContext:
               privileged: true
               capabilities:
