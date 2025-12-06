@@ -40,13 +40,7 @@ spec:
                 value: "1000"
               - name: TZ
                 value: "Europe/Paris"
-            resources:
-              requests:
-                cpu: 200m
-                memory: 256Mi
-              limits:
-                cpu: 1000m
-                memory: 1Gi
+
             probes:
               startup:
                 enabled: true
