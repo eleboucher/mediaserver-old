@@ -23,7 +23,6 @@ spec:
         replicas: 1
         strategy: Recreate
 
-
         containers:
           app:
             image:
@@ -42,7 +41,7 @@ spec:
                   secretKeyRef:
                     name: qbitmanage-secrets
                     key: qbitmanage-user
-              - name: QBIT_USER
+              - name: QBIT_PASS
                 valueFrom:
                   secretKeyRef:
                     name: qbitmanage-secrets
@@ -59,36 +58,7 @@ spec:
                 value: "15" # wait 15 seconds after startup before running, to ensure qBitTorrent is up as well!
               - name: QBT_TAG_NOHARDLINKS
                 value: "true" # tag files without hardlinks
-            probes:
-              startup:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 8080
-                  initialDelaySeconds: 10
-                  periodSeconds: 5
-                  timeoutSeconds: 3
-                  failureThreshold: 30
-              liveness:
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /
-                    port: 8080
-                  periodSeconds: 30
-                  timeoutSeconds: 5
-                  failureThreshold: 3
 
-    service:
-      app:
-        controller: qbitmanage
-        ports:
-          http:
-            port: 8080
-            protocol: TCP
 
     persistence:
       config:
