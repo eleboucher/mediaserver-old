@@ -94,3 +94,4 @@ config/open-webui/*
 config/sabnzbd/Downloads/*
 config/wizarr/database/*
 config/checkmk
+config/netdata

@@ -1,0 +1,81 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: netdata
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: netdata
+      version: "3.x.x" # Flux will grab latest stable
+      sourceRef:
+        kind: HelmRepository
+        name: netdata
+        namespace: monitoring
+  values:
+    child:
+      enabled: true
+
+      # Inject the Discord Webhook from the secret
+      envFrom:
+        - secretRef:
+            name: netdata-secrets
+
+
+      # Configure Alerts
+      configs:
+        health_alarm_notify:
+          data: |
+            # Enable Discord
+            SEND_DISCORD="YES"
+
+            # The URL is pulled from the environment variable we set above
+            # (No need to paste it here in plain text)
+
+            # Default channel for alerts
+            DEFAULT_RECIPIENT_DISCORD="alerts"
+
+      # Resource Limits (Keep it light)
+      resources:
+        limits:
+          memory: 512Mi
+          cpu: 500m
+        requests:
+          cpu: 100m
+          memory: 128Mi
+
+      # Persistent Storage (Optional: Netdata uses its own DB engine)
+      # If you restart the pod, you lose history without this.
+      # Since it's a DaemonSet, hostPath is easiest.
+      volumeMounts:
+        - name: netdata-storage
+          mountPath: /var/cache/netdata
+      volumes:
+        - name: netdata-storage
+          hostPath:
+            path: /opt/yams/config/netdata
+            type: DirectoryOrCreate
+
+    # 3. Service & Ingress (To view the dashboard)
+    service:
+      type: ClusterIP
+      port: 19999
+
+    ingress:
+      enabled: true
+      # Explicitly set class name
+      ingressClassName: traefik
+
+      annotations:
+        kubernetes.io/ingress.class: "" # Clears the default 'nginx' annotation
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+      hosts:
+        - monitor.erwanleboucher.dev
+      path: /
+      pathType: Prefix
+      tls:
+        - secretName: monitor-tls
+          hosts:
+            - monitor.erwanleboucher.dev
