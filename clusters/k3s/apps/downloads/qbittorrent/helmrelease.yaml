@@ -29,6 +29,7 @@ spec:
             fsGroupChangePolicy: "OnRootMismatch"
 
         containers:
+
           # Gluetun VPN container (network provider)
           gluetun:
             image:
@@ -51,17 +52,7 @@ spec:
                   periodSeconds: 3
                   timeoutSeconds: 2
                   failureThreshold: 3
-            lifecycle:
-              postStart:
-                exec:
-                  command:
-                    - /bin/sh
-                    - -c
-                    - |
-                      sleep 2
-                      while ip rule del table 51820 2>/dev/null; do :; done
-                      while ip -6 rule del table 51820 2>/dev/null; do :; done
-                      exit 0
+
             securityContext:
               capabilities:
                 add:
@@ -77,6 +68,8 @@ spec:
                   secretKeyRef:
                     name: vpn-config
                     key: VPN_TYPE
+              - name: IPV6_DISABLED
+                value: "true"
               - name: WIREGUARD_PRIVATE_KEY
                 valueFrom:
                   secretKeyRef:
