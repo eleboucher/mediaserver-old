@@ -99,7 +99,7 @@ spec:
           mountPath: /var/lib/grafana
       extraInitContainers:
         - name: fix-fs-permissions
-          image: busybox:latest
+          image: busybox:latest@sha256:e3652a00a2fabd16ce889f0aa32c38eec347b997e73bd09e69c962ec7f8732ee
           command: ["sh", "-c", "chown -R 1000:1000 /var/lib/grafana"]
           securityContext:
             runAsUser: 0
