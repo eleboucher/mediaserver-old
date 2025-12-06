@@ -107,6 +107,8 @@ spec:
     # Disable some default exporters to reduce resource usage
     nodeExporter:
       enabled: true
+      hostRootFsMount:
+        enabled: false
     kubeStateMetrics:
       enabled: true
       nodeSelector:
