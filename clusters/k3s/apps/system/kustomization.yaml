@@ -7,3 +7,4 @@ resources:
   - beszel
   - open-webui
   - home-assistant
+  - cloudflared
