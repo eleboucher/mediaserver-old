@@ -30,3 +30,8 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: intel
+  values:
+    manager:
+      devices:
+        fpga: true
+        gpu: true
