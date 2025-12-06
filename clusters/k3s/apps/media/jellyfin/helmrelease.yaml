@@ -30,6 +30,7 @@ spec:
             supplementalGroups:
               - 44    # video group
               - 992   # render group for /dev/dri
+            privileged: true
         resources:
           limits:
             gpu.intel.com/i915: "1"
@@ -126,6 +127,6 @@ spec:
       # Mount /dev/dri for hardware transcoding
       dri:
         type: hostPath
-        hostPath: /dev/dri/renderD128
+        hostPath: /dev/dri
         globalMounts:
-          - path: /dev/dri/renderD128
+          - path: /dev/dri
