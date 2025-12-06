@@ -17,6 +17,8 @@ spec:
     controllers:
       agent:
         type: daemonset
+        pod:
+          hostNetwork: true
         containers:
           app:
             image:
@@ -42,6 +44,11 @@ spec:
                 memory: 32Mi
               limits:
                 memory: 128Mi
+            tolerations:
+            - key: "freebox"
+              operator: "Equal"
+              value: "true"
+              effect: "NoSchedule"
 
     service:
       app:
