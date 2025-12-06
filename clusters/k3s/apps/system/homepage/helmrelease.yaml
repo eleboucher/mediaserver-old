@@ -219,7 +219,7 @@ spec:
                     description: Monitoring
                     widget:
                       type: uptimekuma
-                      url: http://uptimekuma.monitoring:3001
+                      url: http://uptime-kuma.monitoring
                       slug: default
 
     # 3. Mount the ConfigMaps as files
