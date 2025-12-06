@@ -22,7 +22,7 @@ spec:
         containers:
           app:
             image:
-              repository: henrygd/beszel-agent
+              repository: henrygd/beszel-agent-intel
               tag: latest
             env:
               - name: LISTEN
