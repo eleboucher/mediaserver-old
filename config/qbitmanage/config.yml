@@ -20,7 +20,7 @@ settings:
   rem_unregistered_grace_minutes: 10
   rem_unregistered_max_torrents: 10
 qbt:
-  host: http://gluetun:8081
+  host: http://qbittorrent.downloads:8081
   user: !ENV QBIT_USER
   pass: !ENV QBIT_PASS
 
