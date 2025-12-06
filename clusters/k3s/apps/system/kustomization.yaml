@@ -6,3 +6,4 @@ resources:
   - open-webui
   - home-assistant
   - cloudflared
+  - homepage

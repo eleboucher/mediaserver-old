@@ -1,8 +1,9 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: beszel
-  namespace: dashing
+  name: homepage
+  namespace: system
 spec:
   interval: 30m
   chart:
@@ -14,8 +15,11 @@ spec:
         name: bjw-s
         namespace: flux-system
   values:
+    defaultPodOptions:
+      automountServiceAccountToken: false
+
     controllers:
-      beszel:
+      homepage:
         type: deployment
         replicas: 1
         strategy: Recreate
@@ -28,10 +32,10 @@ spec:
             env:
               - name: TZ
                 value: "Europe/Paris"
-              # Port the application listens on internally
-              - name: PORT
-                value: "8090"
-
+            # Inject secrets as Environment Variables
+            envFrom:
+              - secretRef:
+                  name: homepage-secrets
 
             probes:
               liveness:
@@ -46,10 +50,10 @@ spec:
 
     service:
       app:
-        controller: beszel
+        controller: homepage
         ports:
           http:
-            port: 8090
+            port: 3000
 
     ingress:
       app:
@@ -67,14 +71,192 @@ spec:
                   identifier: app
                   port: http
         tls:
-          - secretName: beszel-tls
+          - secretName: homepage-tls
             hosts:
               - dash.erwanleboucher.dev
 
+    # 2. ConfigMaps (The Application Configuration)
+    configMaps:
+      config:
+        data:
+            docker.yaml: ""
+            kubernetes.yaml: ""
+            bookmarks.yaml: |
+              - Resources:
+                - GitHub:
+                    - icon: github.png
+                      href: https://github.com/
+                - Cloudflare:
+                    - icon: cloudflare.png
+                      href: https://dash.cloudflare.com/
+                - n8n:
+                    - icon: n8n.png
+                      href: https://n8n.erwanleboucher.dev
+                      description: Workflows
+                - Profilarr:
+                    - icon: wizard.png
+                      href: https://profilarr.erwanleboucher.dev
+                      description: Profile Manager
+
+            settings.yaml: |
+              title: Erwan's Home Lab
+              background:
+                image: https://images.unsplash.com/photo-1506318137071-a8bcbf6d9436?ixlib=rb-1.2.1&auto=format&fit=crop&w=2560&q=80
+                opacity: 0.5
+              layout:
+                Media:
+                  style: row
+                  columns: 4
+                Automation:
+                  style: row
+                  columns: 4
+                System:
+                  style: row
+                  columns: 4
+
+            widgets.yaml: |
+              - resources:
+                  cpu: true
+                  memory: true
+                  disk: /
+
+            services.yaml: |
+              - Media:
+                - Jellyfin:
+                    icon: jellyfin.png
+                    href: https://watch.erwanleboucher.dev
+                    description: Media Player
+                    widget:
+                      type: jellyfin
+                      url: http://192.168.1.40:8096
+                      key: {{HOMEPAGE_VAR_JELLYFIN_KEY}}
+                - Jellyseerr:
+                    icon: jellyseerr.png
+                    href: https://request.erwanleboucher.dev
+                    description: Request Media
+                    widget:
+                      type: jellyseerr
+                      url: http://192.168.1.40:5055
+                      key: {{HOMEPAGE_VAR_JELLYSEERR_KEY}}
+
+              - Automation:
+                - Home Assistant:
+                    icon: home-assistant.png
+                    href: https://home.erwanleboucher.dev
+                    description: Home Automation
+                    widget:
+                      type: homeassistant
+                      url: http://192.168.1.40:8123
+                      key: {{HOMEPAGE_VAR_HASS_KEY}}
+                      custom:
+                        - state: sensor.h5075_9d45_temperature
+                          label: bedroom temperature
+                        - state: sensor.h5075_c14b_temperature
+                          label: living room temperature
+                - Sonarr:
+                    icon: sonarr.png
+                    href: https://sonarr.erwanleboucher.dev
+                    description: TV Shows
+                    widget:
+                      type: sonarr
+                      url: http://192.168.1.40:8989
+                      key: {{HOMEPAGE_VAR_SONARR_KEY}}
+                - Radarr:
+                    icon: radarr.png
+                    href: https://radarr.erwanleboucher.dev
+                    description: Movies
+                    widget:
+                      type: radarr
+                      url: http://192.168.1.40:7878
+                      key: {{HOMEPAGE_VAR_RADARR_KEY}}
+                - Bazarr:
+                    icon: bazarr.png
+                    href: https://bazarr.erwanleboucher.dev
+                    description: Subtitles
+                    widget:
+                      type: bazarr
+                      url: http://192.168.1.40:6767
+                      key: {{HOMEPAGE_VAR_BAZARR_KEY}}
+                - Prowlarr:
+                    icon: prowlarr.png
+                    href: https://prowlarr.erwanleboucher.dev
+                    description: Indexer Manager
+                    widget:
+                      type: prowlarr
+                      url: http://192.168.1.40:9696
+                      key: {{HOMEPAGE_VAR_PROWLARR_KEY}}
+                - qBittorrent:
+                    icon: qbittorrent.png
+                    href: https://qbit.erwanleboucher.dev
+                    description: Downloader
+                    widget:
+                      type: qbittorrent
+                      url: http://192.168.1.40:8081
+                      username: {{HOMEPAGE_VAR_QBIT_USER}}
+                      password: {{HOMEPAGE_VAR_QBIT_PASS}}
+
+              - System:
+                - AdGuard Home:
+                    icon: adguard-home.png
+                    href: https://dns.erwanleboucher.dev
+                    description: DNS Sinkhole
+                    widget:
+                      type: adguard
+                      url: http://192.168.1.54:3000
+                - Portainer:
+                    icon: portainer.png
+                    href: https://portainer.erwanleboucher.dev
+                    description: Docker Management
+                    widget:
+                      type: portainer
+                      url: http://192.168.1.40:9000
+                      env: 3
+                      key: {{HOMEPAGE_VAR_PORTAINER_KEY}}
+                - Portainer K8s:
+                    icon: portainer.png
+                    href: https://portainer.erwanleboucher.dev
+                    description: Kubernetes Management
+                    widget:
+                      type: portainer
+                      url: http://192.168.1.40:9000
+                      env: 5
+                      key: {{HOMEPAGE_VAR_PORTAINER_KEY}}
+                - Beszel:
+                    icon: beszel.png
+                    href: https://monitor.erwanleboucher.dev
+                    description: Monitoring
+                    widget:
+                      type: beszel
+                      url: http://192.168.1.40:8090
+                      username: {{HOMEPAGE_VAR_BESZEL_USER}}
+                      password: {{HOMEPAGE_VAR_BESZEL_PASS}}
+                      version: 2
+                - Uptime Kuma:
+                    icon: uptimekuma.png
+                    href: https://monitor.erwanleboucher.dev
+                    description: Monitoring
+                    widget:
+                      type: uptimekuma
+                      url: http://192.168.1.56
+                      slug: default
+
+    # 3. Mount the ConfigMaps as files (Fixed for v3 Chart)
     persistence:
-      data:
-        enabled: true
-        type: hostPath
-        hostPath: /opt/yams/config/beszel
-        globalMounts:
-          - path: /beszel_data
+      config:
+        type: configMap
+        name: homepage-config # Matches the generated name
+        advancedMounts:
+          homepage: # Controller Name
+            app:    # Container Name
+              - path: /app/config/bookmarks.yaml
+                subPath: bookmarks.yaml
+              - path: /app/config/docker.yaml
+                subPath: docker.yaml
+              - path: /app/config/kubernetes.yaml
+                subPath: kubernetes.yaml
+              - path: /app/config/services.yaml
+                subPath: services.yaml
+              - path: /app/config/settings.yaml
+                subPath: settings.yaml
+              - path: /app/config/widgets.yaml
+                subPath: widgets.yaml
