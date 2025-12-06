@@ -229,7 +229,7 @@ radarr:
   only_monitored: false
   port: 7878
   ssl: false
-  sync_only_monitored_movies: false
+  sync_only_monitored_movies: true
   use_ffprobe_cache: true
 series_scores:
   audio_codec: 3
@@ -261,7 +261,7 @@ sonarr:
   series_sync: 60
   ssl: false
   sync_only_monitored_episodes: false
-  sync_only_monitored_series: false
+  sync_only_monitored_series: true
   use_ffprobe_cache: true
 subdl:
   api_key: ''
