@@ -25,9 +25,13 @@ spec:
               repository: henrygd/beszel-agent
               tag: latest
             env:
-              - name: PORT
+              - name: LISTEN
                 value: "45876"
-
+              - name: KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: beszel-agent-secret
+                    key: beszel-api-key
             # Agent needs access to host stats
             securityContext:
               privileged: true
