@@ -27,7 +27,7 @@ spec:
                 - name: RENOVATE_CONFIG_FILE
                   value: "/opt/renovate/config.js"
                 # Environment variables from secret
-                - name: GITHUB_COM_TOKEN
+                - name: RENOVATE_TOKEN
                   valueFrom:
                     secretKeyRef:
                       name: renovate-env
@@ -48,10 +48,8 @@ spec:
                   readOnly: true
               resources:
                 requests:
-                  cpu: 100m
                   memory: 256Mi
                 limits:
-                  cpu: 500m
                   memory: 1Gi
           volumes:
             - name: config-volume
