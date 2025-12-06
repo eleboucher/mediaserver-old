@@ -6,3 +6,4 @@ resources:
   - vpn-secret.sops.yaml
   - qbittorrent
   - sabnzbd
+  - qbitmanage
