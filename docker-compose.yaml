@@ -34,26 +34,26 @@ services:
     networks:
       - yams_network
     restart: unless-stopped
-  cleanuparr:
-    image: ghcr.io/cleanuparr/cleanuparr:latest
-    container_name: cleanuparr
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.28
-    ports:
-      - "11011:11011"
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/cleanuparr:/config
-      # Mount your downloads directory if needed
-      - ${MEDIA_DIRECTORY}:/downloads
-    environment:
-      - PORT=11011
-      - BASE_PATH=
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - UMASK=022
-      - TZ=${TZ}
+  # cleanuparr:
+  #   image: ghcr.io/cleanuparr/cleanuparr:latest
+  #   container_name: cleanuparr
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.28
+  #   ports:
+  #     - "11011:11011"
+  #   volumes:
+  #     - ${INSTALL_DIRECTORY}/config/cleanuparr:/config
+  #     # Mount your downloads directory if needed
+  #     - ${MEDIA_DIRECTORY}:/downloads
+  #   environment:
+  #     - PORT=11011
+  #     - BASE_PATH=
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - UMASK=022
+  #     - TZ=${TZ}
 
   # Gluetun is our VPN, so you can download torrents safely
   # gluetun:
@@ -253,32 +253,32 @@ services:
   #     - 1.0.0.1
 
 
-  jellyseerr:
-    image: seerr/seerr:develop
-    init: true
-    container_name: jellyseerr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - LOG_LEVEL=debug
-      - TZ=Europe/Paris
-    ports:
-      - 5055:5055
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/jellyseer:/app/config
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
-      start_period: 20s
-      timeout: 3s
-      interval: 15s
-      retries: 3
-    restart: unless-stopped
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.25
+  # jellyseerr:
+  #   image: seerr/seerr:develop
+  #   init: true
+  #   container_name: jellyseerr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - LOG_LEVEL=debug
+  #     - TZ=Europe/Paris
+  #   ports:
+  #     - 5055:5055
+  #   volumes:
+  #     - ${INSTALL_DIRECTORY}/config/jellyseer:/app/config
+  #   healthcheck:
+  #     test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+  #     start_period: 20s
+  #     timeout: 3s
+  #     interval: 15s
+  #     retries: 3
+  #   restart: unless-stopped
+  #   dns:
+  #     - 1.1.1.1
+  #     - 1.0.0.1
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.25
 
 
   # flaresolverr:
