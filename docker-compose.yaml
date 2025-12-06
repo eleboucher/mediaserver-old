@@ -1,18 +1,18 @@
 services:
-  wizarr:
-    container_name: wizarr
-    image: ghcr.io/wizarrrr/wizarr:v2025.11.3
-    ports:
-      - 5690:5690
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/wizarr:/data
-    environment:
-      - PUID=${PUID} #Set UID
-      - PGID=${PGID} #Set GID
-      - DISABLE_BUILTIN_AUTH=false #Set to true ONLY if you are using another auth provider (Authelia, Authentik, etc)
-      - TZ=${TZ} #Set your timezone here
-    networks:
-      - yams_network
+  # wizarr:
+  #   container_name: wizarr
+  #   image: ghcr.io/wizarrrr/wizarr:v2025.11.3
+  #   ports:
+  #     - 5690:5690
+  #   volumes:
+  #     - ${INSTALL_DIRECTORY}/config/wizarr:/data
+  #   environment:
+  #     - PUID=${PUID} #Set UID
+  #     - PGID=${PGID} #Set GID
+  #     - DISABLE_BUILTIN_AUTH=false #Set to true ONLY if you are using another auth provider (Authelia, Authentik, etc)
+  #     - TZ=${TZ} #Set your timezone here
+  #   networks:
+  #     - yams_network
   # jellyfin is used to serve your media to the client devices
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:10.11.4ubu2404-ls10

@@ -1,0 +1,59 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: renovate
+  namespace: automation
+spec:
+  # Run every 6 hours
+  schedule: "0 */6 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: renovate
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: renovate
+              image: ghcr.io/renovatebot/renovate:39.137.0
+              env:
+                - name: LOG_LEVEL
+                  value: "info"
+                - name: RENOVATE_CONFIG_FILE
+                  value: "/opt/renovate/config.js"
+                # Environment variables from secret
+                - name: GITHUB_COM_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: renovate-env
+                      key: GITHUB_COM_TOKEN
+                - name: RENOVATE_REPOSITORIES
+                  valueFrom:
+                    secretKeyRef:
+                      name: renovate-env
+                      key: RENOVATE_REPOSITORIES
+                - name: RENOVATE_GIT_AUTHOR
+                  valueFrom:
+                    secretKeyRef:
+                      name: renovate-env
+                      key: RENOVATE_GIT_AUTHOR
+              volumeMounts:
+                - name: config-volume
+                  mountPath: /opt/renovate
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 1Gi
+          volumes:
+            - name: config-volume
+              configMap:
+                name: renovate-config
