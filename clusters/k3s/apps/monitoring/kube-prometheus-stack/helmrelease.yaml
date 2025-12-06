@@ -16,20 +16,20 @@ spec:
     # Prometheus configuration
     prometheus:
       prometheusSpec:
-        retention: 7d
+        retention: 2d
         storageSpec:
           volumeClaimTemplate:
             spec:
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 5Gi
         resources:
           requests:
-            cpu: 200m
-            memory: 512Mi
+            cpu: 100m
+            memory: 256Mi
           limits:
-            memory: 2Gi
+            memory: 512Mi
         nodeSelector:
           kubernetes.io/hostname: "k3s"
         tolerations:
@@ -63,13 +63,13 @@ spec:
               - grafana.erwanleboucher.dev
       persistence:
         enabled: true
-        size: 5Gi
+        size: 2Gi
       resources:
         requests:
-          cpu: 100m
-          memory: 256Mi
+          cpu: 50m
+          memory: 128Mi
         limits:
-          memory: 512Mi
+          memory: 256Mi
 
     # AlertManager configuration with Discord
     alertmanager:
@@ -113,7 +113,7 @@ spec:
 
     # Disable some default exporters to reduce resource usage
     nodeExporter:
-      enabled: true
+      enabled: false
     kubeStateMetrics:
       enabled: true
 
