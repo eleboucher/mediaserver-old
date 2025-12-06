@@ -36,16 +36,16 @@ spec:
                 value: "1000"
               - name: PGID
                 value: "1000"
-              - name: QBIT_USER
-                valueFrom:
-                  secretKeyRef:
-                    name: qbitmanage-secrets
-                    key: qbitmanage-user
               - name: QBIT_PASS
                 valueFrom:
                   secretKeyRef:
                     name: qbitmanage-secrets
                     key: qbitmanage-pass
+              - name: QBIT_USER
+                valueFrom:
+                  secretKeyRef:
+                    name: qbitmanage-secrets
+                    key: qbitmanage-user
               - name: TZ
                 value: "Europe/Paris"
               - name: QBT_WEB_SERVER
