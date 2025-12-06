@@ -78,6 +78,10 @@ spec:
           - secretName: grafana-tls
             hosts:
               - grafana.erwanleboucher.dev
+      grafana.ini:
+        paths:
+          data: /var/lib/grafana-storage/data
+          plugins: /var/lib/grafana-storage/plugins
       persistence:
         enabled: false
       resources:
