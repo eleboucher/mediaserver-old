@@ -4,11 +4,6 @@ resources:
   # Namespace for all Docker Compose services
   - namespace.yaml
 
-  # Old monolithic files - being migrated to individual folders
-  # - docker-services.yaml
-  # - docker-ingresses.yaml
-  # - external-services.yaml
-
   # New organized structure
   - media
   - downloads
