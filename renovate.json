@@ -8,10 +8,10 @@
     "dependencies"
   ],
   "kubernetes": {
-    "fileMatch": ["^clusters/k3s/.+\\.yaml$"]
+    "fileMatch": ["^clusters/.+\\.yaml$"]
   },
   "helmv3": {
-    "fileMatch": ["^clusters/k3s/.+/helmrelease\\.yaml$"]
+    "fileMatch": ["^clusters/.+/helmrelease\\.yaml$"]
   },
   "packageRules": [
     {
