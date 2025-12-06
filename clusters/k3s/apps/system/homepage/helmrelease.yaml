@@ -15,8 +15,6 @@ spec:
         name: bjw-s
         namespace: flux-system
   values:
-    defaultPodOptions:
-      automountServiceAccountToken: false
 
     controllers:
       homepage:
@@ -32,6 +30,8 @@ spec:
             env:
               - name: TZ
                 value: "Europe/Paris"
+              - name: HOMEPAGE_ALLOWED_HOSTS
+                value: "*"
             # Inject secrets as Environment Variables
             envFrom:
               - secretRef:
@@ -129,7 +129,7 @@ spec:
                     widget:
                       type: jellyfin
                       url: http://192.168.1.40:8096
-                      key: {{HOMEPAGE_VAR_JELLYFIN_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_JELLYFIN_KEY{{ "}}" }}'
                 - Jellyseerr:
                     icon: jellyseerr.png
                     href: https://request.erwanleboucher.dev
@@ -137,7 +137,7 @@ spec:
                     widget:
                       type: jellyseerr
                       url: http://192.168.1.40:5055
-                      key: {{HOMEPAGE_VAR_JELLYSEERR_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_JELLYSEERR_KEY{{ "}}" }}'
 
               - Automation:
                 - Home Assistant:
@@ -147,7 +147,7 @@ spec:
                     widget:
                       type: homeassistant
                       url: http://192.168.1.40:8123
-                      key: {{HOMEPAGE_VAR_HASS_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_HASS_KEY{{ "}}" }}'
                       custom:
                         - state: sensor.h5075_9d45_temperature
                           label: bedroom temperature
@@ -160,7 +160,7 @@ spec:
                     widget:
                       type: sonarr
                       url: http://192.168.1.40:8989
-                      key: {{HOMEPAGE_VAR_SONARR_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_SONARR_KEY{{ "}}" }}'
                 - Radarr:
                     icon: radarr.png
                     href: https://radarr.erwanleboucher.dev
@@ -168,7 +168,7 @@ spec:
                     widget:
                       type: radarr
                       url: http://192.168.1.40:7878
-                      key: {{HOMEPAGE_VAR_RADARR_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_RADARR_KEY{{ "}}" }}'
                 - Bazarr:
                     icon: bazarr.png
                     href: https://bazarr.erwanleboucher.dev
@@ -176,7 +176,7 @@ spec:
                     widget:
                       type: bazarr
                       url: http://192.168.1.40:6767
-                      key: {{HOMEPAGE_VAR_BAZARR_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_BAZARR_KEY{{ "}}" }}'
                 - Prowlarr:
                     icon: prowlarr.png
                     href: https://prowlarr.erwanleboucher.dev
@@ -184,7 +184,7 @@ spec:
                     widget:
                       type: prowlarr
                       url: http://192.168.1.40:9696
-                      key: {{HOMEPAGE_VAR_PROWLARR_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_PROWLARR_KEY{{ "}}" }}'
                 - qBittorrent:
                     icon: qbittorrent.png
                     href: https://qbit.erwanleboucher.dev
@@ -192,8 +192,8 @@ spec:
                     widget:
                       type: qbittorrent
                       url: http://192.168.1.40:8081
-                      username: {{HOMEPAGE_VAR_QBIT_USER}}
-                      password: {{HOMEPAGE_VAR_QBIT_PASS}}
+                      username: '{{ "{{" }}HOMEPAGE_VAR_QBIT_USER{{ "}}" }}'
+                      password: '{{ "{{" }}HOMEPAGE_VAR_QBIT_PASS{{ "}}" }}'
 
               - System:
                 - AdGuard Home:
@@ -211,7 +211,7 @@ spec:
                       type: portainer
                       url: http://192.168.1.40:9000
                       env: 3
-                      key: {{HOMEPAGE_VAR_PORTAINER_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_PORTAINER_KEY{{ "}}" }}'
                 - Portainer K8s:
                     icon: portainer.png
                     href: https://portainer.erwanleboucher.dev
@@ -220,7 +220,7 @@ spec:
                       type: portainer
                       url: http://192.168.1.40:9000
                       env: 5
-                      key: {{HOMEPAGE_VAR_PORTAINER_KEY}}
+                      key: '{{ "{{" }}HOMEPAGE_VAR_PORTAINER_KEY{{ "}}" }}'
                 - Beszel:
                     icon: beszel.png
                     href: https://monitor.erwanleboucher.dev
@@ -228,8 +228,8 @@ spec:
                     widget:
                       type: beszel
                       url: http://192.168.1.40:8090
-                      username: {{HOMEPAGE_VAR_BESZEL_USER}}
-                      password: {{HOMEPAGE_VAR_BESZEL_PASS}}
+                      username: '{{ "{{" }}HOMEPAGE_VAR_BESZEL_USER{{ "}}" }}'
+                      password: '{{ "{{" }}HOMEPAGE_VAR_BESZEL_PASS{{ "}}" }}'
                       version: 2
                 - Uptime Kuma:
                     icon: uptimekuma.png
@@ -240,14 +240,14 @@ spec:
                       url: http://192.168.1.56
                       slug: default
 
-    # 3. Mount the ConfigMaps as files (Fixed for v3 Chart)
+    # 3. Mount the ConfigMaps as files
     persistence:
       config:
         type: configMap
-        name: homepage-config # Matches the generated name
+        name: homepage-config
         advancedMounts:
-          homepage: # Controller Name
-            app:    # Container Name
+          homepage:
+            app:
               - path: /app/config/bookmarks.yaml
                 subPath: bookmarks.yaml
               - path: /app/config/docker.yaml
