@@ -116,22 +116,22 @@ services:
 
   # Sonarr is used to query, add downloads to the download queue and index TV shows
   # https://sonarr.tv/
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:4.0.16.2944-ls299
-    container_name: sonarr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${MEDIA_DIRECTORY}:/data
-      - ${INSTALL_DIRECTORY}/config/sonarr:/config
-    ports:
-      - 8989:8989
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.13
+  # sonarr:
+  #   image: lscr.io/linuxserver/sonarr:4.0.16.2944-ls299
+  #   container_name: sonarr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ${MEDIA_DIRECTORY}:/data
+  #     - ${INSTALL_DIRECTORY}/config/sonarr:/config
+  #   ports:
+  #     - 8989:8989
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.13
 
 
   jellysearch:
@@ -161,55 +161,55 @@ services:
     environment:
       MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
 
-  # Radarr is used to query, add downloads to the download queue and index Movies
-  # https://radarr.video/
-  radarr:
-    image: lscr.io/linuxserver/radarr:6.0.4.10291-ls288
-    container_name: radarr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${MEDIA_DIRECTORY}:/data
-      - ${INSTALL_DIRECTORY}/config/radarr:/config
-    ports:
-      - 7878:7878
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.14
+  # # Radarr is used to query, add downloads to the download queue and index Movies
+  # # https://radarr.video/
+  # radarr:
+  #   image: lscr.io/linuxserver/radarr:6.0.4.10291-ls288
+  #   container_name: radarr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ${MEDIA_DIRECTORY}:/data
+  #     - ${INSTALL_DIRECTORY}/config/radarr:/config
+  #   ports:
+  #     - 7878:7878
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.14
 
 
   # Bazarr is used to download and categorize subtitles
   # https://www.bazarr.media/
-  bazarr:
-    image: lscr.io/linuxserver/bazarr:v1.5.3-ls325
-    container_name: bazarr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${MEDIA_DIRECTORY}:/data
-      - ${INSTALL_DIRECTORY}/config/bazarr:/config
-    ports:
-      - 6767:6767
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.16
+  # bazarr:
+  #   image: lscr.io/linuxserver/bazarr:v1.5.3-ls325
+  #   container_name: bazarr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ${MEDIA_DIRECTORY}:/data
+  #     - ${INSTALL_DIRECTORY}/config/bazarr:/config
+  #   ports:
+  #     - 6767:6767
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.16
 
-  profilarr:
-    image: santiagosayshey/profilarr:beta
-    container_name: profilarr
-    volumes:
-        - ${INSTALL_DIRECTORY}/config/profilarr:/config # Replace with your actual path
-    ports:
-      - 6868:6868
-    environment:
-        - TZ=Europe/Paris
-    restart: unless-stopped
+  # profilarr:
+  #   image: santiagosayshey/profilarr:beta
+  #   container_name: profilarr
+  #   volumes:
+  #       - ${INSTALL_DIRECTORY}/config/profilarr:/config # Replace with your actual path
+  #   ports:
+  #     - 6868:6868
+  #   environment:
+  #       - TZ=Europe/Paris
+  #   restart: unless-stopped
 
 
   qbitmanage:
@@ -233,24 +233,24 @@ services:
 
   # Prowlarr is our torrent indexer/searcher. Sonarr/Radarr use Prowlarr as a source
   # https://prowlarr.com/
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls133
-    container_name: prowlarr
-    ports:
-       - 9696:9696
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${INSTALL_DIRECTORY}/config/prowlarr:/config
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.17
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
+  # prowlarr:
+  #   image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls133
+  #   container_name: prowlarr
+  #   ports:
+  #      - 9696:9696
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ${INSTALL_DIRECTORY}/config/prowlarr:/config
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.17
+  #   dns:
+  #     - 1.1.1.1
+  #     - 1.0.0.1
 
 
   jellyseerr:
@@ -281,25 +281,25 @@ services:
         ipv4_address: 172.20.0.25
 
 
-  flaresolverr:
-    # DockerHub mirror flaresolverr/flaresolverr:latest
-    image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
-    container_name: flaresolverr
-    environment:
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_FILE=${LOG_FILE:-none}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-      - TZ=Europe/London
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/flaresolver:/config
-    restart: unless-stopped
-    networks:
-        yams_network:
-          ipv4_address: 172.20.0.26
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
+  # flaresolverr:
+  #   # DockerHub mirror flaresolverr/flaresolverr:latest
+  #   image: ghcr.io/flaresolverr/flaresolverr:v3.4.6
+  #   container_name: flaresolverr
+  #   environment:
+  #     - LOG_LEVEL=${LOG_LEVEL:-info}
+  #     - LOG_FILE=${LOG_FILE:-none}
+  #     - LOG_HTML=${LOG_HTML:-false}
+  #     - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+  #     - TZ=Europe/London
+  #   volumes:
+  #     - ${INSTALL_DIRECTORY}/config/flaresolver:/config
+  #   restart: unless-stopped
+  #   networks:
+  #       yams_network:
+  #         ipv4_address: 172.20.0.26
+  #   dns:
+  #     - 1.1.1.1
+  #     - 1.0.0.1
 
   tunnel:
     image: cloudflare/cloudflared:2025.11.1
