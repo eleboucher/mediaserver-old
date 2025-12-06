@@ -17,9 +17,6 @@
   "commitMessageTopic": "{{depName}}",
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "docker-compose": {
-    "fileMatch": ["^docker-compose\\.yaml$"]
-  },
   "kubernetes": {
     "fileMatch": ["^clusters/k3s/.+\\.yaml$"]
   },
