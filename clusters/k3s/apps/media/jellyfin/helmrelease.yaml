@@ -30,7 +30,11 @@ spec:
             supplementalGroups:
               - 44    # video group
               - 992   # render group for /dev/dri
-
+        resources:
+          limits:
+            gpu.intel.com/i915: "1"
+          requests:
+            gpu.intel.com/i915: "1"
         containers:
           app:
             image:
