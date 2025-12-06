@@ -22,7 +22,6 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
-
         pod:
           securityContext:
             fsGroup: 1000
@@ -30,7 +29,6 @@ spec:
             supplementalGroups:
               - 44    # video group
               - 992   # render group for /dev/dri
-
         containers:
           app:
             image:
