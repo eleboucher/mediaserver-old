@@ -191,7 +191,7 @@ spec:
                     description: Downloader
                     widget:
                       type: qbittorrent
-                      url: http://qbit.download:8081
+                      url: http://qbit.downloads:8081
                       username: '{{ "{{" }}HOMEPAGE_VAR_QBIT_USER{{ "}}" }}'
                       password: '{{ "{{" }}HOMEPAGE_VAR_QBIT_PASS{{ "}}" }}'
 
@@ -219,7 +219,7 @@ spec:
                     description: Monitoring
                     widget:
                       type: uptimekuma
-                      url: http://uptimekuma.monitoring
+                      url: http://uptimekuma.monitoring:3001
                       slug: default
 
     # 3. Mount the ConfigMaps as files
