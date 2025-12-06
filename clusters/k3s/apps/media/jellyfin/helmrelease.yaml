@@ -85,18 +85,16 @@ spec:
 
     # Hardware acceleration - Intel GPU
     # Security context for HWA
+    # Note: LinuxServer.io images use s6-overlay which needs root initially
+    # The container will drop to PUID/PGID after initialization
     securityContext:
       capabilities:
         add:
           - "SYS_ADMIN"
-        drop:
-          - "ALL"
       privileged: false
 
     # Additional group for video access (992)
     podSecurityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
       fsGroup: 1000
       supplementalGroups:
         - 992  # video group for /dev/dri access
