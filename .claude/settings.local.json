@@ -17,7 +17,8 @@
       "Bash(curl:*)",
       "Bash(kubectl exec:*)",
       "Bash(grep:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(kubectl debug:*)"
     ],
     "deny": [],
     "ask": []

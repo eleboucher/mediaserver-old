@@ -45,18 +45,17 @@ spec:
               # Monitor Docker containers via socket
               - name: DOCKER_HOST
                 value: "unix:///var/run/docker.sock"
-              # Network interfaces to monitor (all by default, use -prefix for blacklist)
-              # - name: NICS
-              #   value: "eth0,wlan*"
-              # Sensors to monitor (all by default, use -prefix for blacklist)
-              # - name: SENSORS
-              #   value: "coretemp,k10temp"
-              # Additional filesystems/disks to monitor
-              # - name: EXTRA_FILESYSTEMS
-              #   value: "sdb,sdc1"
-              # Specify root filesystem device for accurate stats
-              # - name: FILESYSTEM
-              #   value: "/dev/sda1"
+              # Network interfaces - blacklist virtual/container interfaces
+              - name: NICS
+                value: "-veth*,docker*,br-*,flannel*,cni*,kube*,dummy*"
+              # Sensors - monitor all available temperature sensors
+              # Uncomment to filter specific sensors
+              - name: SENSORS
+                value: "coretemp,k10temp"
+              # Additional filesystems/disks to monitor beyond root
+              # Uncomment and adjust if you have additional disks to monitor
+              - name: EXTRA_FILESYSTEMS
+                value: "sdb,sdc1,nvme0n1"
             securityContext:
               privileged: true
               capabilities:
