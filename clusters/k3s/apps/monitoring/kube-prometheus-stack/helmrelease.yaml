@@ -16,39 +16,29 @@ spec:
     # Prometheus configuration
     prometheus:
       prometheusSpec:
-        retention: 2d
+        retention: 7d
         storageSpec:
           volumeClaimTemplate:
             spec:
               accessModes: ["ReadWriteOnce"]
               resources:
                 requests:
-                  storage: 5Gi
+                  storage: 10Gi
         resources:
           requests:
-            cpu: 100m
-            memory: 256Mi
-          limits:
+            cpu: 200m
             memory: 512Mi
+          limits:
+            memory: 2Gi
         nodeSelector:
-          kubernetes.io/hostname: "k3s"
-        tolerations:
-          - key: "freebox"
-            operator: "Equal"
-            value: "true"
-            effect: "NoSchedule"
+          kubernetes.io/hostname: "home"
 
     # Grafana configuration
     grafana:
       enabled: true
       adminPassword: "admin" # Change this after first login!
       nodeSelector:
-        kubernetes.io/hostname: "k3s"
-      tolerations:
-        - key: "freebox"
-          operator: "Equal"
-          value: "true"
-          effect: "NoSchedule"
+        kubernetes.io/hostname: "home"
       ingress:
         enabled: true
         ingressClassName: traefik
@@ -66,22 +56,17 @@ spec:
         size: 2Gi
       resources:
         requests:
-          cpu: 50m
-          memory: 128Mi
-        limits:
+          cpu: 100m
           memory: 256Mi
+        limits:
+          memory: 512Mi
 
     # AlertManager configuration with Discord
     alertmanager:
       enabled: true
       alertmanagerSpec:
         nodeSelector:
-          kubernetes.io/hostname: "k3s"
-        tolerations:
-          - key: "freebox"
-            operator: "Equal"
-            value: "true"
-            effect: "NoSchedule"
+          kubernetes.io/hostname: "home"
         resources:
           requests:
             cpu: 50m
@@ -116,6 +101,8 @@ spec:
       enabled: false
     kubeStateMetrics:
       enabled: true
+      nodeSelector:
+        kubernetes.io/hostname: "home"
 
     # Disable etcd and scheduler monitoring (not exposed in k3s by default)
     kubeEtcd:
