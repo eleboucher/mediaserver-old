@@ -128,7 +128,7 @@ spec:
                     description: Media Player
                     widget:
                       type: jellyfin
-                      url: http://192.168.1.40:8096
+                      url: http://jellyfin.media:8096
                       key: '{{ "{{" }}HOMEPAGE_VAR_JELLYFIN_KEY{{ "}}" }}'
                 - Jellyseerr:
                     icon: jellyseerr.png
@@ -136,7 +136,7 @@ spec:
                     description: Request Media
                     widget:
                       type: jellyseerr
-                      url: http://192.168.1.40:5055
+                      url: http://jellyseerr.media:5055
                       key: '{{ "{{" }}HOMEPAGE_VAR_JELLYSEERR_KEY{{ "}}" }}'
 
               - Automation:
@@ -146,7 +146,7 @@ spec:
                     description: Home Automation
                     widget:
                       type: homeassistant
-                      url: http://192.168.1.40:8123
+                      url: http://homeassistant.media:8123
                       key: '{{ "{{" }}HOMEPAGE_VAR_HASS_KEY{{ "}}" }}'
                       custom:
                         - state: sensor.h5075_9d45_temperature
@@ -159,7 +159,7 @@ spec:
                     description: TV Shows
                     widget:
                       type: sonarr
-                      url: http://192.168.1.40:8989
+                      url: http://sonarr.media:8989
                       key: '{{ "{{" }}HOMEPAGE_VAR_SONARR_KEY{{ "}}" }}'
                 - Radarr:
                     icon: radarr.png
@@ -167,7 +167,7 @@ spec:
                     description: Movies
                     widget:
                       type: radarr
-                      url: http://192.168.1.40:7878
+                      url: http://radarr.media:7878
                       key: '{{ "{{" }}HOMEPAGE_VAR_RADARR_KEY{{ "}}" }}'
                 - Bazarr:
                     icon: bazarr.png
@@ -175,7 +175,7 @@ spec:
                     description: Subtitles
                     widget:
                       type: bazarr
-                      url: http://192.168.1.40:6767
+                      url: http://bazarr.media:6767
                       key: '{{ "{{" }}HOMEPAGE_VAR_BAZARR_KEY{{ "}}" }}'
                 - Prowlarr:
                     icon: prowlarr.png
@@ -183,7 +183,7 @@ spec:
                     description: Indexer Manager
                     widget:
                       type: prowlarr
-                      url: http://192.168.1.40:9696
+                      url: http://prowlarr.media:9696
                       key: '{{ "{{" }}HOMEPAGE_VAR_PROWLARR_KEY{{ "}}" }}'
                 - qBittorrent:
                     icon: qbittorrent.png
@@ -191,7 +191,7 @@ spec:
                     description: Downloader
                     widget:
                       type: qbittorrent
-                      url: http://192.168.1.40:8081
+                      url: http://qbit.download:8081
                       username: '{{ "{{" }}HOMEPAGE_VAR_QBIT_USER{{ "}}" }}'
                       password: '{{ "{{" }}HOMEPAGE_VAR_QBIT_PASS{{ "}}" }}'
 
@@ -203,31 +203,13 @@ spec:
                     widget:
                       type: adguard
                       url: http://192.168.1.54:3000
-                - Portainer:
-                    icon: portainer.png
-                    href: https://portainer.erwanleboucher.dev
-                    description: Docker Management
-                    widget:
-                      type: portainer
-                      url: http://192.168.1.40:9000
-                      env: 3
-                      key: '{{ "{{" }}HOMEPAGE_VAR_PORTAINER_KEY{{ "}}" }}'
-                - Portainer K8s:
-                    icon: portainer.png
-                    href: https://portainer.erwanleboucher.dev
-                    description: Kubernetes Management
-                    widget:
-                      type: portainer
-                      url: http://192.168.1.40:9000
-                      env: 5
-                      key: '{{ "{{" }}HOMEPAGE_VAR_PORTAINER_KEY{{ "}}" }}'
                 - Beszel:
                     icon: beszel.png
                     href: https://monitor.erwanleboucher.dev
                     description: Monitoring
                     widget:
                       type: beszel
-                      url: http://192.168.1.40:8090
+                      url: http://beszel.monitoring:8090
                       username: '{{ "{{" }}HOMEPAGE_VAR_BESZEL_USER{{ "}}" }}'
                       password: '{{ "{{" }}HOMEPAGE_VAR_BESZEL_PASS{{ "}}" }}'
                       version: 2
@@ -237,7 +219,7 @@ spec:
                     description: Monitoring
                     widget:
                       type: uptimekuma
-                      url: http://192.168.1.56
+                      url: http://uptimekuma.monitoring
                       slug: default
 
     # 3. Mount the ConfigMaps as files
