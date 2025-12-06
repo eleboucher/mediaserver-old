@@ -391,60 +391,60 @@ services:
   #       ipv4_address: 172.20.0.51
 
   # Portainer helps debugging and monitors the containers
-  portainer:
-    image: portainer/portainer-ce:2.33.5-alpine
-    container_name: portainer
-    ports:
-      - 9000:9000
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${INSTALL_DIRECTORY}/config/portainer:/data
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.23
+  # portainer:
+  #   image: portainer/portainer-ce:2.33.5-alpine
+  #   container_name: portainer
+  #   ports:
+  #     - 9000:9000
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - ${INSTALL_DIRECTORY}/config/portainer:/data
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.23
 
-  beszel:
-    image: 'henrygd/beszel:0.16'
-    container_name: beszel
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.30
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/beszel_data:/beszel_data
-      - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
-    ports:
-      - "8090:8090"
+  # beszel:
+  #   image: 'henrygd/beszel:0.16'
+  #   container_name: beszel
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.30
+  #   volumes:
+  #     - ${INSTALL_DIRECTORY}/config/beszel_data:/beszel_data
+  #     - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
+  #   ports:
+  #     - "8090:8090"
 
 
-  beszel-agent:
-    image: henrygd/beszel-agent-intel:0.16
-    container_name: beszel-agent
-    restart: unless-stopped
-    network_mode: host
-    cap_add:
-      - CAP_PERFMON
-      - SYS_RAWIO # required for S.M.A.R.T. data
-      - SYS_ADMIN # required for NVMe S.M.A.R.T. data
-    devices:
-      - /dev/dri/card0:/dev/dri/card0
-      - /dev/sda:/dev/sda
-      - /dev/nvme0:/dev/nvme0
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${INSTALL_DIRECTORY}/config/beszel_agent_data:/var/lib/beszel-agent
-      # monitor other disks / partitions by mounting a folder in /extra-filesystems
-      - /:/extra/filesystem:ro
-      - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
-      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
-      - /srv/media/.beszel:/extra-filesystems/sda__Media:ro
-    environment:
-      LISTEN: /beszel_socket/beszel.sock
-      KEY: ${BESZEL_KEY}
-      TOKEN: ${BESZEL_TOKEN}
-      HUB_URL: http://192.168.1.40:8090
+  # beszel-agent:
+  #   image: henrygd/beszel-agent-intel:0.16
+  #   container_name: beszel-agent
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   cap_add:
+  #     - CAP_PERFMON
+  #     - SYS_RAWIO # required for S.M.A.R.T. data
+  #     - SYS_ADMIN # required for NVMe S.M.A.R.T. data
+  #   devices:
+  #     - /dev/dri/card0:/dev/dri/card0
+  #     - /dev/sda:/dev/sda
+  #     - /dev/nvme0:/dev/nvme0
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - ${INSTALL_DIRECTORY}/config/beszel_agent_data:/var/lib/beszel-agent
+  #     # monitor other disks / partitions by mounting a folder in /extra-filesystems
+  #     - /:/extra/filesystem:ro
+  #     - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
+  #     - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+  #     - /srv/media/.beszel:/extra-filesystems/sda__Media:ro
+  #   environment:
+  #     LISTEN: /beszel_socket/beszel.sock
+  #     KEY: ${BESZEL_KEY}
+  #     TOKEN: ${BESZEL_TOKEN}
+  #     HUB_URL: http://192.168.1.40:8090
   postgres:
     image: postgres:16
     restart: always
@@ -495,22 +495,22 @@ services:
       - "traefik.http.routers.n8n.tls.certresolver=myresolver"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
-  # Watchtower is going to keep our instances updated
-  watchtower:
-    image: nickfedor/watchtower:1.12.3
-    container_name: watchtower
-    environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_SCHEDULE=0 0 4 * * * # Check daily at 4am
-      - WATCHTOWER_MONITOR_ONLY=true
-      - WATCHTOWER_NOTIFICATIONS=shoutrrr
-      - WATCHTOWER_NOTIFICATION_URL=discord://ittcuGYpRo6XP1SyEYZhWv6VUp6AZjtrmu3V_dIUQ9Bp4OqOIAbBPmDyjNh-aLgR7Uvh@1445142964794953910
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.20
+  # # Watchtower is going to keep our instances updated
+  # watchtower:
+  #   image: nickfedor/watchtower:1.12.3
+  #   container_name: watchtower
+  #   environment:
+  #     - WATCHTOWER_CLEANUP=true
+  #     - WATCHTOWER_SCHEDULE=0 0 4 * * * # Check daily at 4am
+  #     - WATCHTOWER_MONITOR_ONLY=true
+  #     - WATCHTOWER_NOTIFICATIONS=shoutrrr
+  #     - WATCHTOWER_NOTIFICATION_URL=discord://ittcuGYpRo6XP1SyEYZhWv6VUp6AZjtrmu3V_dIUQ9Bp4OqOIAbBPmDyjNh-aLgR7Uvh@1445142964794953910
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   restart: unless-stopped
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.20
 networks:
   yams_network:
     name: yams_network
