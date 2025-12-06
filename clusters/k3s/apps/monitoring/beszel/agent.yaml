@@ -49,11 +49,13 @@ spec:
                 memory: 32Mi
               limits:
                 memory: 128Mi
-            tolerations:
-            - key: "freebox"
-              operator: "Equal"
-              value: "true"
-              effect: "NoSchedule"
+
+    defaultPodOptions:
+      tolerations:
+      - key: "freebox"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
 
     service:
       app:

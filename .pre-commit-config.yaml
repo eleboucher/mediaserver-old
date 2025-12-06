@@ -1,20 +1,8 @@
 repos:
   - repo: local
     hooks:
-      - id: sops-encrypt
-        name: SOPS Auto-Encryption
-        entry: bash -c '
-          failed=0;
-          for file in "$@"; do
-            if grep -qE "^(data|stringData):" "$file" && ! grep -q "^sops:" "$file"; then
-              sops --encrypt --in-place "$file";
-              echo "🔐 Encrypted $file";
-              failed=1;
-            fi;
-          done;
-          if [ $failed -eq 1 ]; then
-            echo "⚠️  Files were encrypted. Please run \"git add\" on them and commit again.";
-            exit 1;
-          fi' --
+      - id: sops-check-encryption
+        name: SOPS Encryption Check
+        entry: ./check-sops-encryption.sh
         language: system
-        files: .+\.sops\.yaml$
+        files: ^clusters/.+\.sops\.yaml$
