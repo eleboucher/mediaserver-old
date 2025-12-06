@@ -36,13 +36,13 @@ spec:
                 value: "cmk"
               - name: TZ
                 value: "Europe/Paris"
-
+              # Initial password (check logs if not set correctly first time)
             resources:
               requests:
                 cpu: 500m
                 memory: 1Gi
               limits:
-                memory: 2Gi
+                memory: 2Gi # Prevent it from eating all RAM
 
             probes:
               startup:
@@ -82,7 +82,7 @@ spec:
                   identifier: app
                   port: http
         tls:
-          - secretName: checkmk-tls
+          - secretName: monitoring-tls
             hosts:
               - monitoring.erwanleboucher.dev
 
@@ -92,9 +92,9 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /opt/yams/config/checkmk
-        mountPath: /omd/sites
+        globalMounts:
+          - path: /omd/sites
 
-      # ⚠️ Critical: CheckMK needs a tmpfs (RAM disk) for performance
       tmp:
         enabled: true
         type: emptyDir
