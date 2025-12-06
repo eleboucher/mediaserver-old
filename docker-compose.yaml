@@ -301,15 +301,15 @@ services:
   #     - 1.1.1.1
   #     - 1.0.0.1
 
-  tunnel:
-    image: cloudflare/cloudflared:2025.11.1
-    container_name: cloudflared
-    restart: unless-stopped
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN} # Add to .env
-    networks:
-      - yams_network
+  # tunnel:
+  #   image: cloudflare/cloudflared:2025.11.1
+  #   container_name: cloudflared
+  #   restart: unless-stopped
+  #   command: tunnel run
+  #   environment:
+  #     - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN} # Add to .env
+  #   networks:
+  #     - yams_network
 
   homeassistant:
     container_name: homeassistant

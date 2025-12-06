@@ -32,6 +32,11 @@ spec:
             memory: 2Gi
         nodeSelector:
           kubernetes.io/hostname: "home"
+        tolerations:
+          - key: "freebox"
+            operator: "Equal"
+            value: "true"
+            effect: "NoSchedule"
 
     # Grafana configuration
     grafana:
@@ -39,6 +44,11 @@ spec:
       adminPassword: "admin" # Change this after first login!
       nodeSelector:
         kubernetes.io/hostname: "home"
+      tolerations:
+        - key: "freebox"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       ingress:
         enabled: true
         ingressClassName: traefik
@@ -67,6 +77,11 @@ spec:
       alertmanagerSpec:
         nodeSelector:
           kubernetes.io/hostname: "home"
+        tolerations:
+          - key: "freebox"
+            operator: "Equal"
+            value: "true"
+            effect: "NoSchedule"
         resources:
           requests:
             cpu: 50m
@@ -103,6 +118,11 @@ spec:
       enabled: true
       nodeSelector:
         kubernetes.io/hostname: "home"
+      tolerations:
+        - key: "freebox"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
 
     # Disable etcd and scheduler monitoring (not exposed in k3s by default)
     kubeEtcd:
