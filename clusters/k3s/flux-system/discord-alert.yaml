@@ -6,7 +6,7 @@ metadata:
 spec:
   type: discord
   secretRef:
-    name: discord-webhook-secret
+    name: discord-webhook-secrets
 ---
 apiVersion: notification.toolkit.fluxcd.io/v1beta3
 kind: Alert
