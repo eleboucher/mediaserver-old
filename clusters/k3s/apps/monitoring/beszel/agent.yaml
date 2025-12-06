@@ -64,6 +64,7 @@ spec:
                 add:
                   - CAP_PERFMON
                   - SYS_RAWIO
+                  - SYS_ADMIN
 
             resources:
               requests:
@@ -103,6 +104,12 @@ spec:
         globalMounts:
           - path: /var/run/docker.sock
             readOnly: true
+      # Mount /dev for SMART disk monitoring
+      dev:
+        type: hostPath
+        hostPath: /dev
+        globalMounts:
+          - path: /dev
 
 ---
 # Intel GPU-enabled agent for AMD64 home node
@@ -162,6 +169,7 @@ spec:
                 add:
                   - CAP_PERFMON
                   - SYS_RAWIO
+                  - SYS_ADMIN
 
             resources:
               requests:
@@ -207,3 +215,9 @@ spec:
         globalMounts:
           - path: /var/run/docker.sock
             readOnly: true
+      # Mount /dev for SMART disk monitoring
+      dev:
+        type: hostPath
+        hostPath: /dev
+        globalMounts:
+          - path: /dev
