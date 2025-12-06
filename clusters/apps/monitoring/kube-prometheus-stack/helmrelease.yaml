@@ -66,13 +66,21 @@ spec:
             hosts:
               - grafana.erwanleboucher.dev
       persistence:
-        enabled: true
-        size: 2Gi
+        enabled: false
       resources:
         requests:
           memory: 256Mi
         limits:
           memory: 512Mi
+      extraVolumes:
+        - name: grafana-host-storage
+          hostPath:
+            path: /opt/yams/config/grafana
+            type: DirectoryOrCreate
+
+      extraVolumeMounts:
+          - name: grafana-host-storage
+            mountPath: /var/lib/grafana
 
     # AlertManager configuration with Discord
     alertmanager:
@@ -181,13 +189,4 @@ spec:
       hostRootFsMount:
         enabled: false
         mountPropagation: HostToContainer
-    extraVolumes:
-      - name: grafana-host-storage
-        hostPath:
-          path: /opt/yams/config/grafana
-          type: DirectoryOrCreate
 
-      # 3. Mount the volume to Grafana's data directory
-    extraVolumeMounts:
-        - name: grafana-host-storage
-          mountPath: /var/lib/grafana
