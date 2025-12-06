@@ -8,4 +8,8 @@ resources:
   - prowlarr
   - bazarr
   - jellyseerr
+  - flaresolverr
+  - wizarr
+  - profilarr
+  - cleanuparr
   - namespace.yaml
