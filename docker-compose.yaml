@@ -14,26 +14,26 @@ services:
   #   networks:
   #     - yams_network
   # jellyfin is used to serve your media to the client devices
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin:10.11.4ubu2404-ls10
-    container_name: jellyfin
-    group_add:
-      - '992'
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - VERSION=docker
-    devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128 # for hardware acceleration
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${MEDIA_DIRECTORY}:/data
-      - ${INSTALL_DIRECTORY}/config/${MEDIA_SERVICE}:/config
-    ports: # plex
-      - 8096:8096 # plex
-    networks:
-      - yams_network
-    restart: unless-stopped
+  # jellyfin:
+  #   image: lscr.io/linuxserver/jellyfin:10.11.4ubu2404-ls10
+  #   container_name: jellyfin
+  #   group_add:
+  #     - '992'
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - VERSION=docker
+  #   devices:
+  #     - /dev/dri/renderD128:/dev/dri/renderD128 # for hardware acceleration
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - ${MEDIA_DIRECTORY}:/data
+  #     - ${INSTALL_DIRECTORY}/config/${MEDIA_SERVICE}:/config
+  #   ports: # plex
+  #     - 8096:8096 # plex
+  #   networks:
+  #     - yams_network
+  #   restart: unless-stopped
   # cleanuparr:
   #   image: ghcr.io/cleanuparr/cleanuparr:latest
   #   container_name: cleanuparr
