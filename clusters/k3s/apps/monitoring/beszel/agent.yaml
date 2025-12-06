@@ -32,6 +32,11 @@ spec:
                   secretKeyRef:
                     name: beszel-agent-secret
                     key: beszel-api-key
+              - name: TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: beszel-agent-secret
+                    key: beszel-hub-token
               - name: HUB_URL
                 value: "http://beszel:8090"
             # Agent needs access to host stats
