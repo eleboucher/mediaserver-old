@@ -85,20 +85,20 @@ spec:
           - SETGID
           - SETUID
 
-    # Disable default PVC persistence - we'll use hostPath volumes
+    # Disable default PVC persistence - we'll use hostPath volumes via extraVolumes
     persistence:
       config:
         enabled: false
       media:
         enabled: false
 
-    # Mount config, media, and /dev/dri using volumes
-    volumes:
-      - name: config
+    # Mount config, media, and /dev/dri using extraVolumes
+    extraVolumes:
+      - name: jellyfin-config
         hostPath:
           path: /opt/yams/config/jellyfin
           type: Directory
-      - name: media
+      - name: jellyfin-media
         hostPath:
           path: /srv/media
           type: Directory
@@ -106,10 +106,10 @@ spec:
         hostPath:
           path: /dev/dri
 
-    volumeMounts:
-      - name: config
+    extraVolumeMounts:
+      - name: jellyfin-config
         mountPath: /config
-      - name: media
+      - name: jellyfin-media
         mountPath: /media
       - name: dri
         mountPath: /dev/dri
