@@ -122,6 +122,6 @@ spec:
       # Mount /dev/dri for hardware transcoding
       dri:
         type: hostPath
-        hostPath: /dev/dri
+        hostPath: /dev/dri/renderD128
         globalMounts:
-          - path: /dev/dri
+          - path: /dev/dri/renderD128
