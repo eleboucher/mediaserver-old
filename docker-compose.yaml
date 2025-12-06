@@ -311,44 +311,44 @@ services:
   #   networks:
   #     - yams_network
 
-  homeassistant:
-    container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:2025.11.3"
-    volumes:
-      - ./config/homeassistant:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-    devices:
-      - /dev/ttyUSB0:/dev/ttyUSB0
-    cap_add:
-    - NET_ADMIN
-    - NET_RAW
-    restart: unless-stopped
-    network_mode: host
-    privileged: true
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
-    environment:
-      TZ: Europe/Paris
+  # homeassistant:
+  #   container_name: homeassistant
+  #   image: "ghcr.io/home-assistant/home-assistant:2025.11.3"
+  #   volumes:
+  #     - ./config/homeassistant:/config
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /run/dbus:/run/dbus:ro
+  #   devices:
+  #     - /dev/ttyUSB0:/dev/ttyUSB0
+  #   cap_add:
+  #   - NET_ADMIN
+  #   - NET_RAW
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   privileged: true
+  #   dns:
+  #     - 1.1.1.1
+  #     - 1.0.0.1
+  #   environment:
+  #     TZ: Europe/Paris
 
-  ha-linky:
-    build:
-      context: ./ha-linky
-      dockerfile: standalone.Dockerfile
-    container_name: ha-linky
-    depends_on:
-      - homeassistant
-    restart: unless-stopped
-    environment:
-      - SUPERVISOR_TOKEN=${SUPERVISOR_TOKEN}
-      - WS_URL=ws://192.168.1.40:8123/api/websocket
-      - TZ=Europe/Paris
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/ha-linky:/data
-    networks:
-      yams_network:
-        ipv4_address: 172.20.0.27
+  # ha-linky:
+  #   build:
+  #     context: ./ha-linky
+  #     dockerfile: standalone.Dockerfile
+  #   container_name: ha-linky
+  #   depends_on:
+  #     - homeassistant
+  #   restart: unless-stopped
+  #   environment:
+  #     - SUPERVISOR_TOKEN=${SUPERVISOR_TOKEN}
+  #     - WS_URL=ws://192.168.1.40:8123/api/websocket
+  #     - TZ=Europe/Paris
+  #   volumes:
+  #     - ${INSTALL_DIRECTORY}/config/ha-linky:/data
+  #   networks:
+  #     yams_network:
+  #       ipv4_address: 172.20.0.27
 
   ollama:
     image: ollama/ollama:0.13.0
