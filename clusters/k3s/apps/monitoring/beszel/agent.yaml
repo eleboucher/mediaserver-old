@@ -16,9 +16,7 @@ spec:
   values:
     controllers:
       agent:
-        # ⚠️ DaemonSet ensures it runs on EVERY node (N150 + Freebox)
         type: daemonset
-
         containers:
           app:
             image:
@@ -32,6 +30,8 @@ spec:
                   secretKeyRef:
                     name: beszel-agent-secret
                     key: beszel-api-key
+              - name: HUB_URL
+                value: "http://beszel:8090"
             # Agent needs access to host stats
             securityContext:
               privileged: true
