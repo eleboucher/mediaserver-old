@@ -4,19 +4,9 @@
     "config:best-practices"
   ],
   "timezone": "Europe/Paris",
-  "schedule": [
-    "after 10pm every weekday",
-    "before 5am every weekday",
-    "every weekend"
-  ],
   "labels": [
     "dependencies"
   ],
-  "commitMessagePrefix": "chore(deps):",
-  "commitMessageAction": "update",
-  "commitMessageTopic": "{{depName}}",
-  "prConcurrentLimit": 5,
-  "prHourlyLimit": 2,
   "kubernetes": {
     "fileMatch": ["^clusters/k3s/.+\\.yaml$"]
   },
@@ -24,11 +14,6 @@
     "fileMatch": ["^clusters/k3s/.+/helmrelease\\.yaml$"]
   },
   "packageRules": [
-    {
-      "description": "Group all Docker Compose updates together",
-      "matchManagers": ["docker-compose"],
-      "groupName": "docker-compose dependencies"
-    },
     {
       "description": "Group all Kubernetes/Helm updates together",
       "matchManagers": ["kubernetes", "helmv3", "flux"],
