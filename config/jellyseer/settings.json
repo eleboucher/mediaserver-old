@@ -125,16 +125,18 @@
  "notifications": {
   "agents": {
    "email": {
-    "enabled": false,
+    "enabled": true,
     "embedPoster": true,
     "options": {
      "userEmailRequired": false,
-     "emailFrom": "",
-     "smtpHost": "",
+     "emailFrom": "request@watch.erwanleboucher.dev",
+     "smtpHost": "in-v3.mailjet.com",
      "smtpPort": 587,
      "secure": false,
      "ignoreTls": false,
      "requireTls": false,
+     "authUser": "e8ffe0e98e92b9463c0a1a5e1e796e19",
+     "authPass": "faa513bf91b36f18094b46d83f192b6f",
      "allowSelfSigned": false,
      "senderName": "Jellyseerr"
     }
