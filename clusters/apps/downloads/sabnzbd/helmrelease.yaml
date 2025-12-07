@@ -117,7 +117,7 @@ spec:
               - path: /config
                 subPath: sabnzbd
 
-          data:
+        data:
             type: persistentVolumeClaim
             existingClaim: media-nfs-pvc
             globalMounts:
