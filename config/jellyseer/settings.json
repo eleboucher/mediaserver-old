@@ -67,6 +67,10 @@
   "apiKey": "79dff55828df4d61b4314891d0eb3731"
  },
  "tautulli": {},
+ "metadataSettings": {
+  "tv": "tmdb",
+  "anime": "tmdb"
+ },
  "radarr": [
   {
    "name": "radarr",
@@ -75,8 +79,8 @@
    "apiKey": "df673502c53e41e1b58c60b4f9dc97e9",
    "useSsl": false,
    "baseUrl": "",
-   "activeProfileId": 11,
-   "activeProfileName": "2160p Quality [Dictionarry]",
+   "activeProfileId": 12,
+   "activeProfileName": "1080p Efficient [Dictionarry]",
    "activeDirectory": "/data/movies",
    "is4k": false,
    "minimumAvailability": "released",
@@ -122,6 +126,7 @@
   "agents": {
    "email": {
     "enabled": false,
+    "embedPoster": true,
     "options": {
      "userEmailRequired": false,
      "emailFrom": "",
@@ -136,6 +141,7 @@
    },
    "discord": {
     "enabled": true,
+    "embedPoster": true,
     "types": 10,
     "options": {
      "webhookUrl": "https://discord.com/api/webhooks/1441534637477204122/mcW0cfglMgt8bB6Gp-PqvxJ__dqX8nQBMYAld4ZF4HOgX19VYAeqoU55aoR_MbACrvcu",
@@ -145,6 +151,7 @@
    },
    "slack": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "webhookUrl": ""
@@ -152,6 +159,7 @@
    },
    "telegram": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "botAPI": "",
@@ -162,6 +170,7 @@
    },
    "pushbullet": {
     "enabled": false,
+    "embedPoster": false,
     "types": 0,
     "options": {
      "accessToken": ""
@@ -169,6 +178,7 @@
    },
    "pushover": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "accessToken": "",
@@ -178,6 +188,7 @@
    },
    "webhook": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "webhookUrl": "",
@@ -186,10 +197,12 @@
    },
    "webpush": {
     "enabled": false,
+    "embedPoster": true,
     "options": {}
    },
    "gotify": {
     "enabled": false,
+    "embedPoster": false,
     "types": 0,
     "options": {
      "url": "",
@@ -199,6 +212,7 @@
    },
    "ntfy": {
     "enabled": false,
+    "embedPoster": true,
     "types": 0,
     "options": {
      "url": "",
@@ -261,6 +275,11 @@
    "password": "",
    "bypassFilter": "",
    "bypassLocalAddresses": true
+  },
+  "dnsCache": {
+   "enabled": false,
+   "forceMinTtl": 0,
+   "forceMaxTtl": -1
   }
  },
  "migrations": [
