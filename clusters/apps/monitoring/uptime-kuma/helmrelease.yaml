@@ -96,6 +96,7 @@ spec:
         data:
           type: persistentVolumeClaim
           existingClaim: config-nfs-pvc
+          namespace: downloads
           globalMounts:
             - path: /app/data
               subPath: uptime-kuma
