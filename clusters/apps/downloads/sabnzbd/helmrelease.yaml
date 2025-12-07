@@ -37,6 +37,10 @@ spec:
                           operator: In
                           values:
                             - k3s-mac
+          tolerations:
+            - key: "transient"
+              operator: "Exists"
+              effect: "NoSchedule"
         containers:
           app:
             image:
@@ -106,12 +110,11 @@ spec:
               - sabnzbd.erwanleboucher.dev
 
     persistence:
-      config:
-        type: persistentVolumeClaim
-        existingClaim: config-nfs-pvc
-        globalMounts:
-          - path: /config
-            subPath: sabnzbd
+        config:
+          existingClaim: sabnzbd-config
+          globalMounts:
+            - path: /config
+
 
         data:
           type: persistentVolumeClaim
