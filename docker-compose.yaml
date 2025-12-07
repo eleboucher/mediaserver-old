@@ -135,7 +135,7 @@ services:
 
 
   jellysearch:
-    image: domistyle/jellysearch:latest
+    image: domistyle/jellysearch:latest@sha256:e758fefa1020c0a6fb2504f48d150f9ed454a5155ca61bf2d89ff9df50ea171d
     container_name: jellysearch
     restart: unless-stopped
     volumes:
@@ -151,7 +151,7 @@ services:
 
 
   meilisearch:
-    image: getmeili/meilisearch:v1.9
+    image: getmeili/meilisearch:v1.9@sha256:2e540df681bfab567d449c8d7a2c5e513eb10a7aa87b13cc88da84a963a2490e
     restart: unless-stopped
     networks:
       yams_network:
@@ -351,7 +351,7 @@ services:
   #       ipv4_address: 172.20.0.27
 
   ollama:
-    image: ollama/ollama:0.13.0
+    image: ollama/ollama:0.13.0@sha256:d4188c1dfa870386a14e299976aed96daeb83876b69e1a852c9d09ea76463b9f
     container_name: ollama
     restart: unless-stopped
     devices:
@@ -446,7 +446,7 @@ services:
   #     TOKEN: ${BESZEL_TOKEN}
   #     HUB_URL: http://192.168.1.40:8090
   postgres:
-    image: postgres:16
+    image: postgres:16@sha256:cf2a05fe40887b721e4b3dbac8fd32673c08292dcc8ba6b62b52b7f640433bd0
     restart: always
     networks:
       yams_network:
@@ -467,7 +467,7 @@ services:
       retries: 10
 
   n8n:
-    image: docker.n8n.io/n8nio/n8n:1.123.0
+    image: docker.n8n.io/n8nio/n8n:1.123.0@sha256:e1c87fb78c3d3f58f08263fb4710a270453982945616d5fc4ddb60f4524c51fc
     restart: always
     environment:
       - DB_TYPE=postgresdb
