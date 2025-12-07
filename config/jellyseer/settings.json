@@ -7,7 +7,7 @@
   "applicationTitle": "Jellyseerr",
   "applicationUrl": "https://request.erwanleboucher.dev",
   "cacheImages": true,
-  "defaultPermissions": 8388768,
+  "defaultPermissions": 79708320,
   "defaultQuotas": {
    "movie": {
     "quotaLimit": 0,
