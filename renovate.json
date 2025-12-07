@@ -3,20 +3,31 @@
   "extends": [
     "config:best-practices"
   ],
+  "pinDigests": true,
   "timezone": "Europe/Paris",
   "labels": [
     "dependencies"
   ],
-  "kubernetes": {
+  "flux": {
     "fileMatch": ["^clusters/.+\\.yaml$"]
   },
   "helmv3": {
     "fileMatch": ["^clusters/.+/helmrelease\\.yaml$"]
   },
+  "regexManagers": [
+    {
+      "description": "Process custom Docker images in HelmRelease values",
+      "fileMatch": ["^clusters/.+\\.yaml$"],
+      "matchStrings": [
+        "repository:\\s+[\"']?(?<depName>[^\\s\"']+)[\"']?\\s*\\n\\s*tag:\\s+[\"']?(?<currentValue>[^\\s\"']+)[\"']?"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
       "description": "Group all Kubernetes/Helm updates together",
-      "matchManagers": ["kubernetes", "helmv3", "flux"],
+      "matchManagers": ["kubernetes", "helmv3", "flux", "regex"],
       "groupName": "k3s dependencies"
     },
     {
