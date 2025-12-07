@@ -111,16 +111,17 @@ spec:
 
     persistence:
         config:
-          existingClaim: sabnzbd-config
-          globalMounts:
-            - path: /config
+            type: persistentVolumeClaim
+            existingClaim: config-nfs-pvc
+            globalMounts:
+              - path: /config
+                subPath: sabnzbd
 
-
-        data:
-          type: persistentVolumeClaim
-          existingClaim: media-nfs-pvc
-          globalMounts:
-            - path: /data
+          data:
+            type: persistentVolumeClaim
+            existingClaim: media-nfs-pvc
+            globalMounts:
+              - path: /data
 
         incomplete:
           type: emptyDir
