@@ -1,13 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:best-practices"],
-  "pinDigests": true,
   "timezone": "Europe/Paris",
   "labels": ["dependencies"],
   "flux": {
     "fileMatch": ["^clusters/.+\\.yaml$"]
   },
   "packageRules": [
+  {
+      "description": "Fix LinuxServer.io qBittorrent version confusion (ignore year-based tags like 20.x)",
+      "matchPackageNames": ["lscr.io/linuxserver/qbittorrent", "linuxserver/qbittorrent"],
+      "allowedVersions": "<= 10.0.0"
+    },
     {
       "description": "Group K3s minor/patch upgrades",
       "matchManagers": ["flux", "kubernetes", "helmv3"],
