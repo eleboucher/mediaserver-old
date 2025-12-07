@@ -26,7 +26,8 @@
         "helmv3",
         "flux"
       ],
-      "groupName": "k3s dependencies"
+      "groupName": "k3s dependencies",
+      "matchPackagePatterns": ["*"]
     },
     {
       "description": "Auto-merge patch updates for stable images",
@@ -45,6 +46,12 @@
         "major"
       ],
       "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Pin dependencies separately to avoid conflicts",
+      "matchUpdateTypes": ["pin", "digest"],
+      "groupName": "pin dependencies",
+      "automerge": true
     }
   ],
   "vulnerabilityAlerts": {
