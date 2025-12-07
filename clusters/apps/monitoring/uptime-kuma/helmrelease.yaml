@@ -1,3 +1,6 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
+
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -7,11 +10,12 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: uptime-kuma
-      version: "2.24.0" # Flux will grab the latest stable
+      chart: app-template
+      version: "3.6.0"
       sourceRef:
         kind: HelmRepository
-        name: uptime-kuma
+        name: bjw-s
+        namespace: flux-system
   postRenderers:
     - kustomize:
         patches:
@@ -30,49 +34,68 @@ spec:
                     - "qbit.erwanleboucher.dev"
                     - "prowlarr.erwanleboucher.dev"
   values:
-    image:
-      repository: louislam/uptime-kuma
-      tag: "2.0.2"
-      pullPolicy: Always
+    controllers:
+      uptimekuma:
+        type: deployment
+        replicas: 1
+        strategy: Recreate
+        containers:
+          app:
+            image:
+              repository: louislam/uptime-kuma
+              tag: "2.0.2"
+              pullPolicy: Always
 
-    nodeSelector:
-      kubernetes.io/hostname: "k3s"
-
-    tolerations:
-      - key: "freebox"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+            probes:
+                liveness:
+                  enabled: true
+                readiness:
+                  enabled: true
+                startup:
+                  enabled: true
+                  spec:
+                    failureThreshold: 30
+                    periodSeconds: 10
+    defaultPodOptions:
+      nodeSelector:
+        kubernetes.io/hostname: "k3s"
+      tolerations:
+        - key: "freebox"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
 
     service:
-      type: ClusterIP
-      port: 80
-      targetPort: 3001
+        app:
+          controller: uptimekuma
+          ports:
+            http:
+              port: 3001
 
     ingress:
-      enabled: true
-      className: traefik
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-production
-        traefik.ingress.kubernetes.io/router.entrypoints: websecure
-      hosts:
-        - host: status.erwanleboucher.dev
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - secretName: uptime-kuma-tls
+        app:
+          enabled: true
+          className: traefik
+          annotations:
+            traefik.ingress.kubernetes.io/router.entrypoints: websecure
+            cert-manager.io/cluster-issuer: "letsencrypt-production"
           hosts:
-            - status.erwanleboucher.dev
+            - host: status.erwanleboucher.dev
+              paths:
+                - path: /
+                  pathType: Prefix
+                  service:
+                    identifier: app
+                    port: http
+          tls:
+            - secretName: uptime-kuma-tls
+              hosts:
+                - status.erwanleboucher.dev
 
-    # Mariadb configurations
-    mariadb:
-      enabled: true
-
-    resources:
-      limits:
-        memory: 512Mi
-      requests:
-        cpu: 50m
-        memory: 128Mi
-
+    persistence:
+        data:
+          type: persistentVolumeClaim
+          existingClaim: config-nfs-pvc
+          globalMounts:
+            - path: /app/data
+              subPath: uptime-kuma
