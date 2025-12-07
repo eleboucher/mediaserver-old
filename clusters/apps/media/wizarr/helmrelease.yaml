@@ -32,7 +32,7 @@ spec:
           app:
             image:
               repository: ghcr.io/wizarrrr/wizarr
-              tag: v2025.11.3
+              tag: v2025.11.3@sha256:5809c5da07883e3e572b279e41998a6ae93a17f978da899cfe803bc8d7b459fe
             env:
               - name: PUID
                 value: "1000"

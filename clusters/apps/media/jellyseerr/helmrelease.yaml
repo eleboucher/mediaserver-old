@@ -32,7 +32,7 @@ spec:
           app:
             image:
               repository: seerr/seerr
-              tag: develop
+              tag: develop@sha256:e57a3bb66462867ac9817bb03a57266206217bf15368447abf13ac35065dc8ec
             env:
               - name: PUID
                 value: "1000"

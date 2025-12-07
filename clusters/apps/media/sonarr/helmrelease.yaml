@@ -32,7 +32,7 @@ spec:
           app:
             image:
               repository: lscr.io/linuxserver/sonarr
-              tag: 4.0.16.2944-ls299
+              tag: 4.0.16.2944-ls299@sha256:60e5edcac39172294ad22d55d1b08c2c0a9fe658cad2f2c4d742ae017d7874de
             env:
               - name: PUID
                 value: "1000"
