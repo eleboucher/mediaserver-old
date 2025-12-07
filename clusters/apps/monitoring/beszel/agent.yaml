@@ -77,10 +77,14 @@ spec:
       nodeSelector:
         kubernetes.io/arch: arm64
       tolerations:
-      - key: "freebox"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: "freebox"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+        - key: "transient"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
 
     service:
       app:
@@ -181,11 +185,7 @@ spec:
     defaultPodOptions:
       nodeSelector:
         kubernetes.io/arch: amd64
-      tolerations:
-      - key: "freebox"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+
 
     service:
       app:
