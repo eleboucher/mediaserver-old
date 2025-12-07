@@ -17,6 +17,21 @@ spec:
         name: bjw-s
         namespace: flux-system
   values:
+    defaultPodOptions:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k3s-mac
+      tolerations:
+        - key: "transient"
+          operator: "Exists"
+          effect: "NoSchedule"
     controllers:
       ollama:
         type: deployment
@@ -27,10 +42,8 @@ spec:
           app:
             image:
               repository: ollama/ollama
-              tag: 0.13.1-rocm
+              tag: 0.13.1
             env:
-              - name: OLLAMA_NUM_THREADS
-                value: "2"
               - name: OLLAMA_KEEP_ALIVE
                 value: "0"
     service:
