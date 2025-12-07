@@ -151,7 +151,7 @@ services:
 
 
   meilisearch:
-    image: getmeili/meilisearch:v1.9
+    image: getmeili/meilisearch:v1.28@sha256:71cdfc95cbbe20e99e430f9c955a52f6530833ed25041710fa0b04f8128cfbb3
     restart: unless-stopped
     networks:
       yams_network:
