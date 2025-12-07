@@ -24,8 +24,7 @@ spec:
         strategy: Recreate
 
         pod:
-          hostNetwork: true
-          dnsPolicy: ClusterFirstWithHostNet
+
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
