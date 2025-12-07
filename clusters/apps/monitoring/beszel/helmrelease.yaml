@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: henrygd/beszel
-              tag: latest
+              tag: latest@sha256:185142e6c91bd44c77fef6cd31784aee0f782eb1d7193c3ee34a9902a936621c
             env:
               - name: TZ
                 value: "Europe/Paris"

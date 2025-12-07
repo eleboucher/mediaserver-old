@@ -46,7 +46,7 @@ spec:
           app:
             image:
               repository: lscr.io/linuxserver/sabnzbd
-              tag: 4.5.5-ls238
+              tag: 4.5.5-ls238@sha256:1c7be873e575c2ff8f699a5fafc79b34630baeeafcb46ad8a5ac75cef38057a5
             env:
               - name: PUID
                 value: "1000"
