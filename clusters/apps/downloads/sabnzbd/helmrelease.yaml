@@ -27,7 +27,16 @@ spec:
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
-
+          affinity:
+              nodeAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    preference:
+                      matchExpressions:
+                        - key: kubernetes.io/hostname
+                          operator: In
+                          values:
+                            - k3s-mac
         containers:
           app:
             image:
@@ -98,14 +107,20 @@ spec:
 
     persistence:
       config:
-        type: hostPath
-        hostPath: /opt/yams/config/sabnzbd
+        type: persistentVolumeClaim
+        existingClaim: config-nfs-pvc
         globalMounts:
           - path: /config
+            subPath: sabnzbd
 
-      data:
-        type: hostPath
-        hostPath: /srv/media
-        globalMounts:
-          - path: /data
+        data:
+          type: persistentVolumeClaim
+          existingClaim: media-nfs-pvc
+          globalMounts:
+            - path: /data
+
+        incomplete:
+          type: emptyDir
+          globalMounts:
+            - path: /incomplete-downloads
 
