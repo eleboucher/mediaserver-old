@@ -99,3 +99,4 @@ spec:
           globalMounts:
             - path: /app/data
               subPath: uptime-kuma
+
