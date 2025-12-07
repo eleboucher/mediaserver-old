@@ -9,15 +9,22 @@
     "dependencies"
   ],
   "flux": {
-    "fileMatch": ["^clusters/.+\\.yaml$"]
+    "fileMatch": [
+      "^clusters/.+\\.yaml$"
+    ]
   },
   "helmv3": {
-    "fileMatch": ["^clusters/.+/helmrelease\\.yaml$"]
+    "fileMatch": [
+      "^clusters/.+/helmrelease\\.yaml$"
+    ]
   },
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "description": "Process custom Docker images in HelmRelease values",
-      "fileMatch": ["^clusters/.+\\.yaml$"],
+      "fileMatch": [
+        "^clusters/.+\\.yaml$"
+      ],
       "matchStrings": [
         "repository:\\s+[\"']?(?<depName>[^\\s\"']+)[\"']?\\s*\\n\\s*tag:\\s+[\"']?(?<currentValue>[^\\s\"']+)[\"']?"
       ],
@@ -27,24 +34,37 @@
   "packageRules": [
     {
       "description": "Group all Kubernetes/Helm updates together",
-      "matchManagers": ["kubernetes", "helmv3", "flux", "regex"],
+      "matchManagers": [
+        "kubernetes",
+        "helmv3",
+        "flux",
+        "custom.regex"
+      ],
       "groupName": "k3s dependencies"
     },
     {
       "description": "Auto-merge patch updates for stable images",
-      "matchUpdateTypes": ["patch"],
-      "matchDatasources": ["docker"],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
       "automerge": true,
       "automergeType": "pr"
     },
     {
       "description": "Separate major updates and require manual approval",
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "dependencyDashboardApproval": true
     }
   ],
   "vulnerabilityAlerts": {
-    "labels": ["security"],
+    "labels": [
+      "security"
+    ],
     "assignees": []
   }
 }
