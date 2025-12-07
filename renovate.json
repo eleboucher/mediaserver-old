@@ -27,7 +27,9 @@
         "flux"
       ],
       "groupName": "k3s dependencies",
-      "matchPackagePatterns": ["*"]
+      "matchPackageNames": [
+        "*"
+      ]
     },
     {
       "description": "Auto-merge patch updates for stable images",
@@ -49,7 +51,10 @@
     },
     {
       "description": "Pin dependencies separately to avoid conflicts",
-      "matchUpdateTypes": ["pin", "digest"],
+      "matchUpdateTypes": [
+        "pin",
+        "digest"
+      ],
       "groupName": "pin dependencies",
       "automerge": true
     }
