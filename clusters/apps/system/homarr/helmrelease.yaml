@@ -34,3 +34,8 @@ spec:
         - secretName: homepage-tls
           hosts:
             - homarr.erwanleboucher.dev
+    persistence:
+      homarrDatabase:
+        enabled: true
+        type: hostPath
+        hostPath: /opt/yams/config/homarr/database
