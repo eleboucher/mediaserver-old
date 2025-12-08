@@ -7,3 +7,4 @@ resources:
   - cloudflared
   - homepage
   - node-feature-discovery
+  - homarr
