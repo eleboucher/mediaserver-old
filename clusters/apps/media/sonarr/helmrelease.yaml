@@ -1,6 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
-
----
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -19,15 +17,30 @@ spec:
   values:
     controllers:
       sonarr:
+        initContainers:
+          migrate-data:
+            image:
+              repository: alpine
+              tag: latest
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo "Checking for migration..."
+                # If the new Longhorn volume is empty, copy data from the old HostPath
+                if [ ! -f "/config/config.xml" ]; then
+                  echo "Longhorn volume is empty. Migrating data..."
+                  cp -av /host-config/. /config/
+                  echo "Migration Complete!"
+                else
+                  echo "Volume has data. Skipping."
+                fi
         type: deployment
         replicas: 1
         strategy: Recreate
-
         pod:
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
-
         containers:
           app:
             image:
@@ -40,13 +53,11 @@ spec:
                 value: "1000"
               - name: TZ
                 value: "Europe/Paris"
-
             resources:
               requests:
                 memory: 512Mi
               limits:
                 memory: 2Gi
-
             probes:
               startup:
                 enabled: true
@@ -69,7 +80,6 @@ spec:
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
-
     service:
       app:
         controller: sonarr
@@ -77,7 +87,6 @@ spec:
           http:
             port: 8989
             protocol: TCP
-
     ingress:
       app:
         enabled: true
@@ -97,17 +106,24 @@ spec:
           - secretName: sonarr-tls
             hosts:
               - sonarr.erwanleboucher.dev
-
     persistence:
       config:
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        globalMounts:
+          - path: /config
+      # 3. The Old Source (For Migration Only)
+      host-source:
         type: hostPath
         hostPath: /opt/yams/config/sonarr
         globalMounts:
-          - path: /config
-
+          - path: /host-config
+            readOnly: true
       data:
         type: hostPath
         hostPath: /srv/media
         globalMounts:
           - path: /data
-
