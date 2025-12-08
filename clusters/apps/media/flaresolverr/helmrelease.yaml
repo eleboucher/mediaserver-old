@@ -17,6 +17,23 @@ spec:
   values:
     controllers:
       flaresolverr:
+        initContainers:
+          migrate-data:
+            image:
+              repository: alpine
+              tag: latest
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo "Checking for migration..."
+                # If the new Longhorn volume is empty, copy data from the old HostPath
+                if [ ! -f "/config/config.xml" ]; then
+                  echo "Longhorn volume is empty. Migrating data..."
+                  cp -av /host-config/. /config/
+                  echo "Migration Complete!"
+                else
+                  echo "Volume has data. Skipping."
+                fi
         type: deployment
         replicas: 1
         strategy: Recreate
@@ -70,8 +87,16 @@ spec:
             port: 8191
             protocol: TCP
     persistence:
-      config:
+      host-config:
         type: hostPath
         hostPath: /opt/yams/config/flaresolver
+        globalMounts:
+          - path: /host-config
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
         globalMounts:
           - path: /config
