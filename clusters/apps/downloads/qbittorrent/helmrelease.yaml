@@ -198,8 +198,10 @@ spec:
               - qbit.erwanleboucher.dev
     persistence:
       config:
-        type: hostPath
-        hostPath: /opt/yams/config/qbittorrent
+        type: persistentVolumeClaim
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
         globalMounts:
           - path: /config
       data:

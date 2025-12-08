@@ -17,23 +17,6 @@ spec:
   values:
     controllers:
       prowlarr:
-        initContainers:
-          migrate-data:
-            image:
-              repository: alpine
-              tag: latest
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                echo "Checking for migration..."
-                # If the new Longhorn volume is empty, copy data from the old HostPath
-                if [ ! -f "/config/config.xml" ]; then
-                  echo "Longhorn volume is empty. Migrating data..."
-                  cp -av /host-config/. /config/
-                  echo "Migration Complete!"
-                else
-                  echo "Volume has data. Skipping."
-                fi
         type: deployment
         replicas: 1
         strategy: Recreate
@@ -115,8 +98,3 @@ spec:
         size: 2Gi
         globalMounts:
           - path: /config
-      host-config:
-        type: hostPath
-        hostPath: /opt/yams/config/prowlarr
-        globalMounts:
-          - path: /host-config

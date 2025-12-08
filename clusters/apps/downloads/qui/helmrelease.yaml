@@ -92,7 +92,9 @@ spec:
               - qui.erwanleboucher.dev
     persistence:
       config:
-        type: hostPath
-        hostPath: /opt/yams/config/qui
+        type: persistentVolumeClaim
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
         globalMounts:
           - path: /config

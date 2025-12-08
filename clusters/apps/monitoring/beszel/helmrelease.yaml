@@ -73,9 +73,10 @@ spec:
             hosts:
               - monitor.erwanleboucher.dev
     persistence:
-      data:
-        enabled: true
-        type: hostPath
-        hostPath: /opt/yams/config/beszel
+      config:
+        type: persistentVolumeClaim
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
         globalMounts:
-          - path: /beszel_data
+          - path: /config

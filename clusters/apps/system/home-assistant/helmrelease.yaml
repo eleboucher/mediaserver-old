@@ -99,8 +99,10 @@ spec:
               - home.erwanleboucher.dev
     persistence:
       config:
-        type: hostPath
-        hostPath: /opt/yams/config/homeassistant
+        type: persistentVolumeClaim
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 4Gi
         globalMounts:
           - path: /config
       # Mount /etc/localtime for timezone

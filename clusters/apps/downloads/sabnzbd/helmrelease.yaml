@@ -105,11 +105,13 @@ spec:
               - sabnzbd.erwanleboucher.dev
     persistence:
       config:
+        enabled: true
         type: persistentVolumeClaim
-        existingClaim: config-nfs-pvc
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
         globalMounts:
           - path: /config
-            subPath: sabnzbd
       data:
         type: persistentVolumeClaim
         existingClaim: media-nfs-pvc

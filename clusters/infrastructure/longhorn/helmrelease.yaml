@@ -14,6 +14,18 @@ spec:
       version: v1.10.1
   interval: 1m0s
   values:
+    longhornManager:
+      tolerations:
+        - key: "freebox"
+          operator: "Exists"
+          effect: "NoSchedule"
+        - key: "transient"
+          operator: "Exists"
+          effect: "NoSchedule"
     persistence:
-      defaultClass: false # Keep local-path as default for now to avoid breaking things
+      defaultClass: true
       defaultClassReplicaCount: 1
+    defaultSettings:
+      taintToleration: freebox=true:NoSchedule; transient=true:NoSchedule
+      backupTarget: "nfs://192.168.1.40:/srv/media/backups/longhorn-backups"
+      backupTargetCredentialSecret: ""

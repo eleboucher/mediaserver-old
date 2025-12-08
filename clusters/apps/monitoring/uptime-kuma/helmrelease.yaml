@@ -87,9 +87,10 @@ spec:
             hosts:
               - status.erwanleboucher.dev
     persistence:
-      data:
+      config:
         type: persistentVolumeClaim
-        existingClaim: config-nfs-pvc
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
         globalMounts:
           - path: /app/data
-            subPath: uptime-kuma

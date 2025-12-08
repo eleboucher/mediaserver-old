@@ -57,8 +57,10 @@ spec:
                 value: "true" # tag files without hardlinks
     persistence:
       config:
-        type: hostPath
-        hostPath: /opt/yams/config/qbitmanage
+        type: persistentVolumeClaim
+        storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
         globalMounts:
           - path: /config
       data:

@@ -17,23 +17,6 @@ spec:
   values:
     controllers:
       jellyseerr:
-        initContainers:
-          migrate-data:
-            image:
-              repository: alpine
-              tag: latest
-            command: ["/bin/sh", "-c"]
-            args:
-              - |
-                echo "Checking for migration..."
-                # If the new Longhorn volume is empty, copy data from the old HostPath
-                if [ ! -f "/app/config/config.xml" ]; then
-                  echo "Longhorn volume is empty. Migrating data..."
-                  cp -av /host-config/. /app/config
-                  echo "Migration Complete!"
-                else
-                  echo "Volume has data. Skipping."
-                fi
         type: deployment
         replicas: 1
         strategy: Recreate
@@ -109,11 +92,6 @@ spec:
             hosts:
               - request.erwanleboucher.dev
     persistence:
-      host-config:
-        type: hostPath
-        hostPath: /opt/yams/config/jellyseer
-        globalMounts:
-          - path: /host-config
       config:
         type: persistentVolumeClaim
         storageClass: "longhorn"
