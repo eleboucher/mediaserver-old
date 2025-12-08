@@ -34,7 +34,7 @@ spec:
             - path: /
               pathType: Prefix
       tls:
-        - secretName: homepage-tls
+        - secretName: homarr-tls
           hosts:
             - homarr.erwanleboucher.dev
     persistence:
