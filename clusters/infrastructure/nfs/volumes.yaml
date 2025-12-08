@@ -12,7 +12,6 @@ spec:
   nfs:
     server: 192.168.1.40
     path: /srv/media
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -26,7 +25,6 @@ spec:
   resources:
     requests:
       storage: 8Ti
-
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -42,7 +40,6 @@ spec:
   nfs:
     server: 192.168.1.40
     path: /opt/yams/config
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

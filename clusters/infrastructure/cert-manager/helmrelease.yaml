@@ -1,4 +1,3 @@
----
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -27,15 +26,12 @@ spec:
   values:
     crds:
       enabled: true
-
     global:
       leaderElection:
         namespace: cert-manager
-
     # Enable Prometheus metrics
     prometheus:
       enabled: true
-
     # Resource limits
     resources:
       requests:
@@ -43,7 +39,6 @@ spec:
         memory: 32Mi
       limits:
         memory: 128Mi
-
     webhook:
       resources:
         requests:
@@ -51,7 +46,6 @@ spec:
           memory: 32Mi
         limits:
           memory: 128Mi
-
     cainjector:
       resources:
         requests:

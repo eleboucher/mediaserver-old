@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -51,7 +52,6 @@ spec:
             enabled: true
             port: 53
             protocol: UDP
-
     # 3. Storage (HostPath on Freebox VM Disk)
     persistence:
       config:
@@ -70,7 +70,6 @@ spec:
         name: adguard-tls-secret
         mountPath: /opt/adguardhome/ssl
         readOnly: true
-
     # 4. Config (Same as primary)
     config: |
       rewrites:

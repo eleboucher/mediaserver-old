@@ -1,0 +1,6 @@
+{
+  "yaml.schemas": {
+    "file:///Users/erwan.leboucher/.vscode/extensions/docsmsft.docs-yaml-1.0.5/dist/toc.schema.json": "/toc\\.yml/i",
+    "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json": "file:///Users/erwan.leboucher/dev/mediaserver/clusters/apps/media/sonarr/helmrelease.yaml"
+  }
+}

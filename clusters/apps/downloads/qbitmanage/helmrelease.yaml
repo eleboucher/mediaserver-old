@@ -1,6 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
-
----
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -22,7 +20,6 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
-
         containers:
           app:
             image:
@@ -58,18 +55,14 @@ spec:
                 value: "15" # wait 15 seconds after startup before running, to ensure qBitTorrent is up as well!
               - name: QBT_TAG_NOHARDLINKS
                 value: "true" # tag files without hardlinks
-
-
     persistence:
       config:
         type: hostPath
         hostPath: /opt/yams/config/qbitmanage
         globalMounts:
           - path: /config
-
       data:
         type: hostPath
         hostPath: /srv/media
         globalMounts:
           - path: /data
-

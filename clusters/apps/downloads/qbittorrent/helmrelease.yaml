@@ -1,6 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
-
----
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -22,21 +20,16 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
-
         pod:
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
-
-
         containers:
-
           # Gluetun VPN container (network provider)
           gluetun:
             image:
               repository: qmcgaw/gluetun
               tag: v3.40.3@sha256:ef4a44819a60469682c7b5e69183e6401171891feaa60186652d292c59e41b30
-
             probes:
               startup:
                 enabled: false
@@ -53,7 +46,6 @@ spec:
                   periodSeconds: 3
                   timeoutSeconds: 2
                   failureThreshold: 3
-
             securityContext:
               privileged: true
               capabilities:
@@ -104,14 +96,12 @@ spec:
               - name: FIREWALL_OUTBOUND_SUBNETS
                 value: "10.42.0.0/16,10.43.0.0/16,192.168.1.0/24"
               - name: DNS_KEEP_NAMESERVER
-                value : "on"
+                value: "on"
               - name: DOT
                 value: "off"
-
             resources:
               requests:
                 memory: 128Mi
-
           port-forward:
             dependsOn: gluetun
             image:
@@ -153,13 +143,11 @@ spec:
                 value: "Europe/Paris"
               - name: WEBUI_PORT
                 value: "8081"
-
             resources:
               requests:
                 memory: 512Mi
               limits:
                 memory: 2Gi
-
             probes:
               startup:
                 enabled: true
@@ -182,7 +170,6 @@ spec:
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
-
     service:
       app:
         controller: qbittorrent
@@ -190,7 +177,6 @@ spec:
           http:
             port: 8081
             protocol: TCP
-
     ingress:
       app:
         enabled: true
@@ -210,14 +196,12 @@ spec:
           - secretName: qbittorrent-tls
             hosts:
               - qbit.erwanleboucher.dev
-
     persistence:
       config:
         type: hostPath
         hostPath: /opt/yams/config/qbittorrent
         globalMounts:
           - path: /config
-
       data:
         type: hostPath
         hostPath: /srv/media

@@ -1,6 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
-
----
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -22,12 +20,10 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
-
         pod:
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
-
         containers:
           app:
             image:
@@ -42,7 +38,6 @@ spec:
                 value: "false"
               - name: TZ
                 value: "Europe/Paris"
-
             probes:
               startup:
                 enabled: true
@@ -65,7 +60,6 @@ spec:
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
-
     service:
       app:
         controller: wizarr
@@ -73,7 +67,6 @@ spec:
           http:
             port: 5690
             protocol: TCP
-
     ingress:
       app:
         enabled: true
@@ -93,7 +86,6 @@ spec:
           - secretName: wizarr-tls
             hosts:
               - wizarr.erwanleboucher.dev
-
     persistence:
       data:
         type: hostPath

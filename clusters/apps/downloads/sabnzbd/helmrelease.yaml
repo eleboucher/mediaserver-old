@@ -1,6 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
-
----
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -22,22 +20,20 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
-
         pod:
-
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
           affinity:
-              nodeAffinity:
-                preferredDuringSchedulingIgnoredDuringExecution:
-                  - weight: 100
-                    preference:
-                      matchExpressions:
-                        - key: kubernetes.io/hostname
-                          operator: In
-                          values:
-                            - k3s-mac
+            nodeAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  preference:
+                    matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - k3s-mac
           tolerations:
             - key: "transient"
               operator: "Exists"
@@ -81,7 +77,6 @@ spec:
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
-
     service:
       app:
         controller: sabnzbd
@@ -89,7 +84,6 @@ spec:
           http:
             port: 8080
             protocol: TCP
-
     ingress:
       app:
         enabled: true
@@ -109,23 +103,19 @@ spec:
           - secretName: sabnzbd-tls
             hosts:
               - sabnzbd.erwanleboucher.dev
-
     persistence:
-        config:
-            type: persistentVolumeClaim
-            existingClaim: config-nfs-pvc
-            globalMounts:
-              - path: /config
-                subPath: sabnzbd
-
-        data:
-            type: persistentVolumeClaim
-            existingClaim: media-nfs-pvc
-            globalMounts:
-              - path: /data
-
-        incomplete:
-          type: emptyDir
-          globalMounts:
-            - path: /incomplete-downloads
-
+      config:
+        type: persistentVolumeClaim
+        existingClaim: config-nfs-pvc
+        globalMounts:
+          - path: /config
+            subPath: sabnzbd
+      data:
+        type: persistentVolumeClaim
+        existingClaim: media-nfs-pvc
+        globalMounts:
+          - path: /data
+      incomplete:
+        type: emptyDir
+        globalMounts:
+          - path: /incomplete-downloads

@@ -1,6 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/values.schema.json
-
----
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -22,16 +20,13 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
-
         pod:
           # Use host network for device discovery
           hostNetwork: true
           dnsPolicy: ClusterFirstWithHostNet
-
           securityContext:
             fsGroup: 1000
             fsGroupChangePolicy: "OnRootMismatch"
-
         containers:
           app:
             image:
@@ -40,7 +35,6 @@ spec:
             env:
               - name: TZ
                 value: "Europe/Paris"
-
             # Privileged for USB device access
             securityContext:
               privileged: true
@@ -48,7 +42,6 @@ spec:
                 add:
                   - NET_ADMIN
                   - NET_RAW
-
             resources:
               requests:
                 cpu: 200m
@@ -56,7 +49,6 @@ spec:
               limits:
                 cpu: 2000m
                 memory: 2Gi
-
             probes:
               startup:
                 enabled: true
@@ -79,7 +71,6 @@ spec:
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
-
     service:
       app:
         controller: home-assistant
@@ -87,7 +78,6 @@ spec:
           http:
             port: 8123
             protocol: TCP
-
     ingress:
       app:
         enabled: true
@@ -107,14 +97,12 @@ spec:
           - secretName: home-assistant-tls
             hosts:
               - home.erwanleboucher.dev
-
     persistence:
       config:
         type: hostPath
         hostPath: /opt/yams/config/homeassistant
         globalMounts:
           - path: /config
-
       # Mount /etc/localtime for timezone
       localtime:
         type: hostPath
@@ -122,7 +110,6 @@ spec:
         globalMounts:
           - path: /etc/localtime
             readOnly: true
-
       # Mount /run/dbus for system bus access
       dbus:
         type: hostPath
@@ -130,7 +117,6 @@ spec:
         globalMounts:
           - path: /run/dbus
             readOnly: true
-
       # Mount USB device for Zigbee/Z-Wave
       usb:
         type: hostPath
