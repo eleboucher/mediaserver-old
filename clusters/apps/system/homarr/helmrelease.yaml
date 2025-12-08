@@ -18,7 +18,10 @@ spec:
       enabled: true
     service:
       enabled: true
-
+    envSecrets:
+      dbEncryption:
+        existingSecret: "db-encryption"
+        key: "db-encryption-key"
     ingress:
       enabled: true
       className: traefik
@@ -37,5 +40,5 @@ spec:
     persistence:
       homarrDatabase:
         enabled: true
-        type: hostPath
-        hostPath: /opt/yams/config/homarr/database
+        storageClassName: "local-path"
+        size: "1Gi"
