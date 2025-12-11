@@ -1,4 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -20,6 +22,20 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
+        initContainers:
+          migrate-data:
+            image:
+              repository: alpine
+              tag: latest
+            command:
+              - "/bin/sh"
+              - "-c"
+            args:
+              - |
+                echo "Checking for migration..."
+                # If the new Longhorn volume is empty, copy data from the old HostPath
+                cp -av /host-config/. /config/
+                echo "Migration Complete!"
         pod:
           # Use host network for device discovery
           hostNetwork: true
@@ -98,9 +114,15 @@ spec:
             hosts:
               - home.erwanleboucher.dev
     persistence:
+      host-config:
+        type: persistentVolumeClaim
+        existingClaim: home-assistant-config
+        globalMounts:
+          - path: /host-config
       config:
         type: persistentVolumeClaim
-        storageClass: "longhorn"
+        storageClass: "local-path"
+        volumeName: home-assistant-config-local
         accessMode: ReadWriteOnce
         size: 4Gi
         globalMounts:

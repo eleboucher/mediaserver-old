@@ -52,9 +52,9 @@ spec:
               - |
                 echo "Checking for migration..."
                 # If the new Longhorn volume is empty, copy data from the old HostPath
-                if [ ! -f "/config/config.xml" ]; then
+                if [ ! -f "/app/config/config.xml" ]; then
                   echo "Longhorn volume is empty. Migrating data..."
-                  cp -av /host-config/. /config/
+                  cp -av /host-config/. /app/config/
                   echo "Migration Complete!"
                 else
                   echo "Volume has data. Skipping."
@@ -104,15 +104,16 @@ spec:
     persistence:
       host-config:
         type: persistentVolumeClaim
-        storageClass: "longhorn"
-        accessMode: ReadWriteOnce
-        size: 2Gi
+
+        existingClaim: uptime-kuma
+
         globalMounts:
           - path: /host-config
       config:
         type: persistentVolumeClaim
         storageClass: "local-path"
         accessMode: ReadWriteOnce
+        volumeName: uptime-kuma-config
         size: 2Gi
         globalMounts:
           - path: /app/data
