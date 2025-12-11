@@ -24,8 +24,8 @@ spec:
         url: https://prometheus-prod-65-prod-eu-west-2.grafana.net./api/prom/push
         auth:
           type: basic
-          username: "2858175"
-          passwordKey: password
+          usernameKey: "prom-username"
+          passwordKey: "password"
         secret:
           create: false
           name: grafana-cloud-credentials
@@ -34,8 +34,8 @@ spec:
         url: https://logs-prod-012.grafana.net./loki/api/v1/push
         auth:
           type: basic
-          username: "1424764"
-          passwordKey: password
+          usernameKey: "loki-username"
+          passwordKey: "password"
         secret:
           create: false
           name: grafana-cloud-credentials
@@ -54,7 +54,7 @@ spec:
           - name: GCLOUD_RW_API_KEY
             valueFrom:
               secretKeyRef:
-                name: alloy-metrics-remote-cfg-grafana-k8s-monitoring
+                name: grafana-cloud-credentials
                 key: password
           - name: CLUSTER_NAME
             value: homelab
@@ -73,8 +73,8 @@ spec:
         url: https://fleet-management-prod-011.grafana.net
         auth:
           type: basic
-          username: "1466971"
-          passwordKey: password
+          usernameKey: "fleet-username"
+          passwordKey: "password"
         secret:
           create: false
           name: grafana-cloud-credentials
@@ -85,7 +85,7 @@ spec:
           - name: GCLOUD_RW_API_KEY
             valueFrom:
               secretKeyRef:
-                name: alloy-singleton-remote-cfg-grafana-k8s-monitoring
+                name: grafana-cloud-credentials
                 key: password
           - name: CLUSTER_NAME
             value: homelab
@@ -104,8 +104,8 @@ spec:
         url: https://fleet-management-prod-011.grafana.net
         auth:
           type: basic
-          username: "1466971"
-          passwordKey: password
+          usernameKey: "fleet-username"
+          passwordKey: "password"
         secret:
           create: false
           name: grafana-cloud-credentials
@@ -116,7 +116,7 @@ spec:
           - name: GCLOUD_RW_API_KEY
             valueFrom:
               secretKeyRef:
-                name: alloy-logs-remote-cfg-grafana-k8s-monitoring
+                name: grafana-cloud-credentials
                 key: password
           - name: CLUSTER_NAME
             value: homelab
@@ -139,8 +139,8 @@ spec:
         url: https://fleet-management-prod-011.grafana.net
         auth:
           type: basic
-          username: "1466971"
-          passwordKey: password
+          usernameKey: "fleet-username"
+          passwordKey: "password"
         secret:
           create: false
           name: grafana-cloud-credentials
