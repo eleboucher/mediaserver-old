@@ -1,4 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/app-template-4.5.0/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -20,6 +22,25 @@ spec:
         type: deployment
         replicas: 1
         strategy: Recreate
+        initContainers:
+          migrate-data:
+            image:
+              repository: alpine
+              tag: latest
+            command:
+              - "/bin/sh"
+              - "-c"
+            args:
+              - |
+                echo "Checking for migration..."
+                # If the new Longhorn volume is empty, copy data from the old HostPath
+                if [ ! -f "/config/config.xml" ]; then
+                  echo "Longhorn volume is empty. Migrating data..."
+                  cp -av /host-config/. /config/
+                  echo "Migration Complete!"
+                else
+                  echo "Volume has data. Skipping."
+                fi
         pod:
           securityContext:
             fsGroup: 1000
@@ -104,10 +125,17 @@ spec:
             hosts:
               - sabnzbd.erwanleboucher.dev
     persistence:
-      config:
+      host-config:
         enabled: true
         type: persistentVolumeClaim
         storageClass: "longhorn"
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        globalMounts:
+          - path: /host-config
+      config:
+        type: persistentVolumeClaim
+        storageClass: "local-path"
         accessMode: ReadWriteOnce
         size: 2Gi
         globalMounts:
