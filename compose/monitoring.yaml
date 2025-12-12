@@ -1,0 +1,127 @@
+# Beszel Monitoring - Hardware and System Monitoring
+# This provides detailed hardware monitoring that complements Grafana Cloud
+
+services:
+  beszel:
+    image: 'henrygd/beszel:0.16@sha256:24c5513b364a2cb6f966819389128999817afbaebfe81ba2980289e39326f484'
+    container_name: beszel
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.30
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/beszel_data:/beszel_data
+      - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
+    ports:
+      - "8090:8090"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`monitor.erwanleboucher.dev`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.tls.certresolver=myresolver"
+      - "traefik.http.services.beszel.loadbalancer.server.port=8090"
+
+  beszel-agent:
+    image: henrygd/beszel-agent-intel:0.16@sha256:d2bf8e5e62e27c47bcda85882eee438c64abbee1cb359418d1fba4c9c67f1af8
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - CAP_PERFMON
+      - SYS_RAWIO
+      - SYS_ADMIN
+    devices:
+      - /dev/dri/card0:/dev/dri/card0
+      - /dev/sda:/dev/sda
+      - /dev/nvme0:/dev/nvme0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${INSTALL_DIRECTORY}/config/beszel_agent_data:/var/lib/beszel-agent
+      - /:/extra/filesystem:ro
+      - ${INSTALL_DIRECTORY}/config/beszel_socket:/beszel_socket
+      - /var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+      - /srv/media/.beszel:/extra-filesystems/sda__Media:ro
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      KEY: ${BESZEL_KEY}
+      TOKEN: ${BESZEL_TOKEN}
+      HUB_URL: http://192.168.1.40:8090
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:2.0.2
+    container_name: uptime-kuma
+    restart: always
+    networks:
+      - yams_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${INSTALL_DIRECTORY}/config/uptime-kuma:/app/data
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.uptime-kuma.rule=Host(`status.erwanleboucher.dev`)"
+      - "traefik.http.routers.uptime-kuma.entrypoints=websecure"
+      - "traefik.http.routers.uptime-kuma.tls.certresolver=myresolver"
+      - "traefik.http.services.uptime-kuma.loadbalancer.server.port=3001"
+
+  cadvisor:
+    image: ghcr.io/google/cadvisor:0.54.1
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    command:
+      - '--docker_only=true'
+      - '--housekeeping_interval=10s'
+      - '--disable_metrics=percpu,sched,tcp,udp,disk,diskIO,hugetlb,referenced_memory,cpu_topology,resctrl'
+    networks:
+      - yams_network
+    expose:
+      - 8080
+  alloy:
+    image: grafana/alloy:v1.10.0
+    pid: host
+    hostname: ${HOSTNAME:-homelab}
+    environment:
+     - TZ=${TZ}
+     - HOSTNAME=${HOSTNAME:-homelab}
+     - GCLOUD_HOSTED_METRICS_ID=${GCLOUD_HOSTED_METRICS_ID}
+     - GCLOUD_HOSTED_METRICS_URL=${GCLOUD_HOSTED_METRICS_URL}
+     - GCLOUD_HOSTED_LOGS_ID=${GCLOUD_HOSTED_LOGS_ID}
+     - GCLOUD_HOSTED_LOGS_URL=${GCLOUD_HOSTED_LOGS_URL}
+     - GCLOUD_RW_API_KEY=${GCLOUD_RW_API_KEY}
+     - GCLOUD_FM_HOSTED_ID=${GCLOUD_FM_HOSTED_ID}
+     - GCLOUD_SCRAPE_INTERVAL=${GCLOUD_SCRAPE_INTERVAL}
+    container_name: alloy
+    networks:
+      - yams_network
+    ports:
+     - 12345:12345
+     - 4317:4317
+     - 4318:4318
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/alloy/config.alloy:/etc/alloy/config.alloy
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro
+    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    depends_on:
+      - cadvisor

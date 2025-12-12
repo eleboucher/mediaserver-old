@@ -1,0 +1,17 @@
+
+services:
+  renovate:
+    image: ghcr.io/renovatebot/renovate:39.264.0@sha256:f2209c61a9c3c8c74ac58eecb5f15ec43651f1ba694aa33493ff2062b90ff4d3
+    container_name: renovate
+    profiles: ["renovate"]
+    volumes:
+      - ${INSTALL_DIRECTORY}/renovate:/opt/renovate
+    networks:
+      yams_network:
+    environment:
+      - LOG_LEVEL=info
+      - RENOVATE_CONFIG_FILE=/opt/renovate/config.js
+      - RENOVATE_TOKEN=${RENOVATE_TOKEN}
+      - RENOVATE_REPOSITORIES=${RENOVATE_REPOSITORIES}
+      - RENOVATE_GIT_AUTHOR=${RENOVATE_GIT_AUTHOR}
+

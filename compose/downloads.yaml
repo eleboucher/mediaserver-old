@@ -1,0 +1,159 @@
+
+services:
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:v2025.11.3@sha256:5809c5da07883e3e572b279e41998a6ae93a17f978da899cfe803bc8d7b459fe
+    ports:
+      - 5690:5690
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/wizarr:/data
+    environment:
+      - PUID=${PUID} #Set UID
+      - PGID=${PGID} #Set GID
+      - DISABLE_BUILTIN_AUTH=false #Set to true ONLY if you are using another auth provider (Authelia, Authentik, etc)
+      - TZ=${TZ} #Set your timezone here
+    networks:
+      - yams_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wizarr.rule=Host(`wizarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.wizarr.entrypoints=websecure"
+      - "traefik.http.routers.wizarr.tls.certresolver=myresolver"
+      - "traefik.http.services.wizarr.loadbalancer.server.port=5690"
+
+  cleanuparr:
+    image: ghcr.io/cleanuparr/cleanuparr:latest@sha256:4d387adbb67b8c181a6a71e07a9093a250a3d7b6c70570a95077e45037f62738
+    container_name: cleanuparr
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.28
+    ports:
+      - "11011:11011"
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/cleanuparr:/config
+      - ${MEDIA_DIRECTORY}:/downloads
+    environment:
+      - PORT=11011
+      - BASE_PATH=
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=022
+      - TZ=${TZ}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cleanuparr.rule=Host(`cleanuparr.erwanleboucher.dev`)"
+      - "traefik.http.routers.cleanuparr.entrypoints=websecure"
+      - "traefik.http.routers.cleanuparr.tls.certresolver=myresolver"
+      - "traefik.http.services.cleanuparr.loadbalancer.server.port=11011"
+
+  gluetun:
+    image: qmcgaw/gluetun:v3.40.3@sha256:ef4a44819a60469682c7b5e69183e6401171891feaa60186652d292c59e41b30
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - tmp_qbittorrent_data:/tmp/gluetun
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp  # HTTP proxy
+      - 8388:8388/tcp  #Shadowsocks
+      - 8388:8388/udp  #Shadowsocks
+      - 8003:8000/tcp  #Admin
+      - 8081:8081/tcp  #gluetun
+      - 8082:8080/tcp  #gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE}
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_PROVIDER=protonvpn
+      - PORT_FORWARD_ONLY=on
+      - FIREWALL_OUTBOUND_SUBNETS=172.20.0.0/24
+      - SERVER_COUNTRIES=Netherlands
+    restart: unless-stopped
+    networks:
+      yams_network:
+        ipv4_address: 172.20.0.18
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbit.rule=Host(`qbit.erwanleboucher.dev`)"
+      - "traefik.http.routers.qbit.entrypoints=websecure"
+      - "traefik.http.routers.qbit.tls.certresolver=myresolver"
+      - "traefik.http.routers.qbit.service=qbit"
+      - "traefik.http.services.qbit.loadbalancer.server.port=8081"
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:4.5.5-ls238@sha256:1c7be873e575c2ff8f699a5fafc79b34630baeeafcb46ad8a5ac75cef38057a5
+    container_name: sabnzbd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/Paris
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/sabnzbd:/config
+      - tmp_incomplete_data:/tmp/sabnzbd
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    networks:
+      yams_network:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.erwanleboucher.dev`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
+      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
+      - "traefik.http.routers.sabnzbd.service=sabnzbd"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:4.6.7@sha256:55f15d44396315551f87294a176efae733b16e283f38980308e46073950257c6
+    container_name: qbittorrent
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - WEBUI_PORT=8081
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${MEDIA_DIRECTORY}:/data
+      - ${INSTALL_DIRECTORY}/config/qbittorrent:/config
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+
+  qui:
+    image: ghcr.io/autobrr/qui:latest
+    container_name: qui
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/Paris
+      - QUI__BASE_URL=/
+      # - QUI__HOST="0.0.0.0"
+    networks:
+      yams_network:
+    ports:
+      - 7476:7476
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qui.rule=Host(`qui.erwanleboucher.dev`)"
+      - "traefik.http.routers.qui.entrypoints=websecure"
+      - "traefik.http.routers.qui.tls.certresolver=myresolver"
+      - "traefik.http.services.qui.loadbalancer.server.port=7476"
+
+  gluetun-qbittorrent-port-manager:
+    image: snoringdragon/gluetun-qbittorrent-port-manager:latest
+    restart: unless-stopped
+    volumes:
+      - tmp_qbittorrent_data:/tmp/gluetun
+    network_mode: "service:gluetun"
+    environment:
+      QBITTORRENT_SERVER: qbittorrent # IP Address of qbittorrent
+      QBITTORRENT_PORT: 8080
+      QBITTORRENT_USER: ${QBIT_USERNAME} # username
+      QBITTORRENT_PASS: ${QBIT_PASSWORD} # password
+      PORT_FORWARDED: /tmp/gluetun/forwarded_port
+      HTTP_S: http
