@@ -3,9 +3,7 @@
   "extends": ["config:best-practices"],
   "timezone": "Europe/Paris",
   "labels": ["dependencies"],
-  "flux": {
-    "fileMatch": ["^clusters/.+\\.yaml$"]
-  },
+  "ignorePaths": ["clusters/**"],
   "packageRules": [
   {
       "description": "Fix LinuxServer.io qBittorrent version confusion (ignore year-based tags like 20.x)",
