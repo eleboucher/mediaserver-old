@@ -9,11 +9,12 @@ services:
       - "443:443"
       - "853:853"
     environment:
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN} # Add this to your .env
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${INSTALL_DIRECTORY}/config/traefik/acme.json:/acme.json
       - ${INSTALL_DIRECTORY}/config/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./logs/:/logs/
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
@@ -28,16 +29,20 @@ services:
       - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
       - "--providers.file.filename=/etc/traefik/dynamic.yml"
       - "--providers.file.watch=true"
+      - "--accesslog.filePath=/logs/access.log"
     restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:172.20.0.1"
     networks:
-      - yams_network
+      yams_network:
+      homelab:
+        ipv4_address: 192.168.1.52
 
   adguardhome:
     image: adguard/adguardhome@sha256:92929135ced2554aaf94706f766a98ad348f211df61b0704e2db7e8498cc00b7
     ports:
       - 53:53/tcp # plain dns over tcp
       - 53:53/udp # plain dns over udp
-      - 80:80/tcp # http web interface
       - 3000:3000/tcp # initial setup web interface
     networks:
       homelab:
@@ -123,6 +128,8 @@ services:
     container_name: gluetun
     cap_add:
       - NET_ADMIN
+    volumes:
+      - tmp_qbittorrent_data:/tmp/gluetun
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
@@ -152,11 +159,7 @@ services:
       - "traefik.http.routers.qbit.tls.certresolver=myresolver"
       - "traefik.http.routers.qbit.service=qbit"
       - "traefik.http.services.qbit.loadbalancer.server.port=8081"
-      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.erwanleboucher.dev`)"
-      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
-      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
-      - "traefik.http.routers.sabnzbd.service=sabnzbd"
-      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+
 
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:4.5.5-ls238@sha256:1c7be873e575c2ff8f699a5fafc79b34630baeeafcb46ad8a5ac75cef38057a5
@@ -169,8 +172,20 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${MEDIA_DIRECTORY}:/data
       - ${INSTALL_DIRECTORY}/config/sabnzbd:/config
+      - tmp_incomplete_data:/tmp/sabnzbd
     restart: unless-stopped
-    network_mode: "service:gluetun"
+    ports:
+      - 8080:8080
+    networks:
+      yams_network:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.erwanleboucher.dev`)"
+      - "traefik.http.routers.sabnzbd.entrypoints=websecure"
+      - "traefik.http.routers.sabnzbd.tls.certresolver=myresolver"
+      - "traefik.http.routers.sabnzbd.service=sabnzbd"
+      - "traefik.http.services.sabnzbd.loadbalancer.server.port=8080"
+
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:4.6.7@sha256:55f15d44396315551f87294a176efae733b16e283f38980308e46073950257c6
@@ -179,17 +194,52 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - WEBUI_PORT=8081
-      - DOCKER_MODS=ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ${MEDIA_DIRECTORY}:/data
       - ${INSTALL_DIRECTORY}/config/qbittorrent:/config
     restart: unless-stopped
     network_mode: "service:gluetun"
+
+  qui:
+    image: ghcr.io/autobrr/qui:latest
+    container_name: qui
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/Paris
+      - QUI__BASE_URL=/
+      # - QUI__HOST="0.0.0.0"
+    networks:
+      yams_network:
+    ports:
+      - 7476:7476
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qui.rule=Host(`qui.erwanleboucher.dev`)"
+      - "traefik.http.routers.qui.entrypoints=websecure"
+      - "traefik.http.routers.qui.tls.certresolver=myresolver"
+      - "traefik.http.services.qui.loadbalancer.server.port=7476"
+
+  gluetun-qbittorrent-port-manager:
+    image: snoringdragon/gluetun-qbittorrent-port-manager:latest
+    restart: unless-stopped
+    volumes:
+      - tmp_qbittorrent_data:/tmp/gluetun
+    network_mode: "service:gluetun"
+    environment:
+      QBITTORRENT_SERVER: qbittorrent # IP Address of qbittorrent
+      QBITTORRENT_PORT: 8080
+      QBITTORRENT_USER: ${QBIT_USERNAME} # username
+      QBITTORRENT_PASS: ${QBIT_PASSWORD} # password
+      PORT_FORWARDED: /tmp/gluetun/forwarded_port
+      HTTP_S: http
+
   renovate:
     image: ghcr.io/renovatebot/renovate:39.264.0@sha256:f2209c61a9c3c8c74ac58eecb5f15ec43651f1ba694aa33493ff2062b90ff4d3
     container_name: renovate
-    restart: unless-stopped
+    profiles: ["renovate"]
     volumes:
       - ${INSTALL_DIRECTORY}/renovate:/opt/renovate
     networks:
@@ -396,14 +446,11 @@ services:
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
     cap_add:
-    - NET_ADMIN
-    - NET_RAW
+      - NET_ADMIN
+      - NET_RAW
     restart: unless-stopped
     network_mode: host
     privileged: true
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
     environment:
       TZ: Europe/Paris
 
@@ -598,8 +645,6 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/24
-
-
   homelab:
     driver: macvlan
     driver_opts:
@@ -607,4 +652,9 @@ networks:
     ipam:
       config:
         - subnet: 192.168.1.0/24
-          gateway: 192.168.1.1
+          gateway: 192.168.1.254
+          ip_range: 192.168.1.53/32
+
+volumes:
+  tmp_qbittorrent_data: {}
+  tmp_incomplete_data: {}
