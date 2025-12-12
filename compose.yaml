@@ -173,7 +173,7 @@ services:
     network_mode: "service:gluetun"
 
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:4.6.3@sha256:5b3a3a3de1df989eac72fa5d7179233dde489a2c2140eb6a34cdf07441efd352
+    image: lscr.io/linuxserver/qbittorrent:4.6.7@sha256:55f15d44396315551f87294a176efae733b16e283f38980308e46073950257c6
     container_name: qbittorrent
     environment:
       - PUID=${PUID}
