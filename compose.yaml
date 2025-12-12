@@ -426,7 +426,7 @@ services:
   #       ipv4_address: 172.20.0.27
 
   ollama:
-    image: ollama/ollama:0.13.0@sha256:d4188c1dfa870386a14e299976aed96daeb83876b69e1a852c9d09ea76463b9f
+    image: ollama/ollama:0.13.3@sha256:6c76395793f40a5e78f120e880ca82c67e39eb908ad90eee8ce755535529d0ec
     container_name: ollama
     restart: unless-stopped
     devices:
