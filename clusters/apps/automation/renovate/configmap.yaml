@@ -1,10 +1,11 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: renovate-config
   namespace: automation
 data:
-  config.js: |
+  config.js: |-
     module.exports = {
       platform: 'github',
       autodiscover: false,
