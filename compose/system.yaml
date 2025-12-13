@@ -6,6 +6,8 @@ services:
     ports:
       - 53:53/tcp # plain dns over tcp
       - 53:53/udp # plain dns over udp
+      - 853:853/tcp # dns over tls
+      - 853:853/udp # dns over tls
       - 3000:3000/tcp # initial setup web interface
     networks:
       homelab:
