@@ -3,9 +3,16 @@
   "extends": ["config:best-practices"],
   "timezone": "Europe/Paris",
   "labels": ["dependencies"],
-  "docker-compose": {
-    "managerFilePatterns": ["/(^|/)compose\\.yaml$/", "/^compose\\/.+\\.yaml$/"]
-  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^compose/.+\\.ya?ml$"],
+      "matchStrings": [
+        "image:\\s*['\"]?(?<depName>[^:'\"\\s]+):(?<currentValue>[^'\"\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?['\"]?"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
       "description": "Fix LinuxServer.io qBittorrent version confusion (ignore year-based tags like 20.x)",
