@@ -3,18 +3,17 @@
   "extends": ["config:best-practices"],
   "timezone": "Europe/Paris",
   "labels": ["dependencies"],
-  "ignorePaths": ["clusters/**"],
+  "docker-compose": {
+    "managerFilePatterns": ["/(^|/)compose\\.yaml$/", "/^compose\\/.+\\.yaml$/"]
+  },
   "packageRules": [
-  {
-      "description": "Fix LinuxServer.io qBittorrent version confusion (ignore year-based tags like 20.x)",
-      "matchPackageNames": ["lscr.io/linuxserver/qbittorrent", "linuxserver/qbittorrent"],
-      "allowedVersions": "<= 10.0.0"
-    },
     {
-      "description": "Group K3s minor/patch upgrades",
-      "matchManagers": ["flux", "kubernetes", "helmv3"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "k3s dependencies"
+      "description": "Fix LinuxServer.io qBittorrent version confusion (ignore year-based tags like 20.x)",
+      "matchPackageNames": [
+        "lscr.io/linuxserver/qbittorrent",
+        "linuxserver/qbittorrent"
+      ],
+      "allowedVersions": "<= 10.0.0"
     },
     {
       "description": "Group pins and digests separately",
