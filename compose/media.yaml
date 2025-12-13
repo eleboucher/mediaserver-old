@@ -49,9 +49,6 @@ services:
       interval: 15s
       retries: 3
     restart: unless-stopped
-    dns:
-      - 1.1.1.1
-      - 1.0.0.1
     networks:
       yams_network:
         ipv4_address: 172.20.0.25
@@ -63,7 +60,7 @@ services:
       - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
   wizarr:
     container_name: wizarr
-    image: ghcr.io/wizarrrr/wizarr:v2025.11.3@sha256:5809c5da07883e3e572b279e41998a6ae93a17f978da899cfe803bc8d7b459fe
+    image: ghcr.io/wizarrrr/wizarr:v2025.12.0
     ports:
       - 5690:5690
     volumes:
