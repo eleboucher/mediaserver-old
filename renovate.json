@@ -4,7 +4,7 @@
   "timezone": "Europe/Paris",
   "labels": ["dependencies"],
   "docker-compose": {
-    "managerFilePatterns": ["/(^|/)compose\\.yaml$/", "/^compose\\/.+\\.yaml$/"]
+    "includePaths": ["^compose/.*\\.ya?ml$"]
   },
   "packageRules": [
     {
