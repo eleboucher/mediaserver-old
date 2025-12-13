@@ -130,14 +130,3 @@ services:
     command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
     depends_on:
       - cadvisor
-  notifiarr:
-    container_name: notifiarr
-    hostname: notifiarr
-    image: golift/notifiarr:latest
-    restart: unless-stopped
-    ports:
-      - "5454:5454"
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/notifiarr:/config
-      - /var/run/utmp:/var/run/utmp
-      - /etc/machine-id:/etc/machine-id
