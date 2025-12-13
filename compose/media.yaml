@@ -1,3 +1,4 @@
+---
 
 services:
   # jellyfin is used to serve your media to the client devices
@@ -60,3 +61,25 @@ services:
       - "traefik.http.routers.jellyseerr.entrypoints=websecure"
       - "traefik.http.routers.jellyseerr.tls.certresolver=myresolver"
       - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:v2025.11.3@sha256:5809c5da07883e3e572b279e41998a6ae93a17f978da899cfe803bc8d7b459fe
+    ports:
+      - 5690:5690
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/wizarr:/data
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - DISABLE_BUILTIN_AUTH=false
+      - TZ=${TZ}
+      - GUNICORN_WORKERS=2
+    restart: unless-stopped
+    networks:
+      - yams_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wizarr.rule=Host(`wizarr.erwanleboucher.dev`)"
+      - "traefik.http.routers.wizarr.entrypoints=websecure"
+      - "traefik.http.routers.wizarr.tls.certresolver=myresolver"
+      - "traefik.http.services.wizarr.loadbalancer.server.port=5690"

@@ -1,25 +1,6 @@
+---
 
 services:
-  wizarr:
-    container_name: wizarr
-    image: ghcr.io/wizarrrr/wizarr:v2025.11.3@sha256:5809c5da07883e3e572b279e41998a6ae93a17f978da899cfe803bc8d7b459fe
-    ports:
-      - 5690:5690
-    volumes:
-      - ${INSTALL_DIRECTORY}/config/wizarr:/data
-    environment:
-      - PUID=${PUID} #Set UID
-      - PGID=${PGID} #Set GID
-      - DISABLE_BUILTIN_AUTH=false #Set to true ONLY if you are using another auth provider (Authelia, Authentik, etc)
-      - TZ=${TZ} #Set your timezone here
-    networks:
-      - yams_network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wizarr.rule=Host(`wizarr.erwanleboucher.dev`)"
-      - "traefik.http.routers.wizarr.entrypoints=websecure"
-      - "traefik.http.routers.wizarr.tls.certresolver=myresolver"
-      - "traefik.http.services.wizarr.loadbalancer.server.port=5690"
 
   cleanuparr:
     image: ghcr.io/cleanuparr/cleanuparr:latest@sha256:4d387adbb67b8c181a6a71e07a9093a250a3d7b6c70570a95077e45037f62738
@@ -57,12 +38,12 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - 8888:8888/tcp  # HTTP proxy
-      - 8388:8388/tcp  #Shadowsocks
-      - 8388:8388/udp  #Shadowsocks
-      - 8003:8000/tcp  #Admin
-      - 8081:8081/tcp  #gluetun
-      - 8082:8080/tcp  #gluetun
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp #Shadowsocks
+      - 8388:8388/udp #Shadowsocks
+      - 8003:8000/tcp #Admin
+      - 8081:8081/tcp #gluetun
+      - 8082:8080/tcp #gluetun
     environment:
       - VPN_SERVICE_PROVIDER=${VPN_SERVICE}
       - VPN_TYPE=wireguard
