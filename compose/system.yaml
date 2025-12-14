@@ -14,6 +14,7 @@ services:
     networks:
       homelab:
         ipv4_address: 192.168.1.53
+        ipv6_address: fd0f:ee:b0::53
     volumes:
       - ${INSTALL_DIRECTORY}/config/adguard/conf:/opt/adguardhome/conf # app configuration
       - ${INSTALL_DIRECTORY}/config/adguard/work:/opt/adguardhome/work # app working directory

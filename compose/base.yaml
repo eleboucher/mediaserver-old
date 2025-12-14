@@ -10,11 +10,14 @@ networks:
     driver: macvlan
     driver_opts:
       parent: enp1s0
+    enable_ipv6: true
     ipam:
       config:
         - subnet: 192.168.1.0/24
           gateway: 192.168.1.254
           ip_range: 192.168.1.53/32
+        - subnet: fd0f:ee:b0::/64
+          gateway: fd0f:ee:b0::1
 
 volumes:
   tmp_qbittorrent_data: {}
