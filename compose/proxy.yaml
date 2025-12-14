@@ -30,6 +30,7 @@ services:
       - "--certificatesresolvers.myresolver.acme.storage=/acme.json"
       - "--providers.file.filename=/etc/traefik/dynamic.yml"
       - "--providers.file.watch=true"
+      - "--entryPoints.dot.address=:853"
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:172.20.0.1"
