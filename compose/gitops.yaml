@@ -1,0 +1,48 @@
+services:
+  core:
+    image: ghcr.io/moghtech/komodo-core:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    container_name: komodo-core
+    restart: unless-stopped
+    networks:
+      yams_network:
+    depends_on:
+      - ferretdb
+    ports:
+      - 9120:9120
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/komodo:/config
+      - ${INSTALL_DIRECTORY}:/host/mediaserver
+    environment:
+      KOMODO_HOST: https://komodo.erwanleboucher.dev
+      KOMODO_DATABASE_ADDRESS: ferretdb:27017
+      KOMODO_DATABASE_USERNAME: ${DB_USERNAME}
+      KOMODO_DATABASE_PASSWORD: ${DB_PASSWORD}
+      KOMODO_PASSKEY: ${KOMODO_PASSKEY}
+      KOMODO_FIRST_SERVER: https://periphery:8120
+    labels:
+      - komodo.skip
+      - "traefik.enable=true"
+      - "traefik.http.routers.komodo.rule=Host(`komodo.erwanleboucher.dev`)"
+      - "traefik.http.routers.komodo.entrypoints=websecure"
+      - "traefik.http.routers.komodo.tls.certresolver=myresolver"
+      - "traefik.http.services.komodo.loadbalancer.server.port=9120"
+
+  periphery:
+    image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    container_name: komodo-periphery
+    networks:
+      yams_network:
+    labels:
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+    restart: unless-stopped
+    volumes:
+      ## Mount external docker socket
+      - /var/run/docker.sock:/var/run/docker.sock
+      ## Allow Periphery to see processes outside of container
+      - /proc:/proc
+      - ${INSTALL_DIRECTORY}:/host/mediaserver
+      ## Specify the Periphery agent root directory.
+      ## Must be the same inside and outside the container,
+      ## or docker will get confused. See https://github.com/moghtech/komodo/discussions/180.
+      ## Default: /etc/komodo.
+      - ${INSTALL_DIRECTORY}:/host/mediaserver

@@ -11,3 +11,5 @@ include:
   - compose/monitoring.yaml
   - compose/system.yaml
   - compose/ai.yaml
+  - compose/gitops.yaml
+  - compose/database.yaml
