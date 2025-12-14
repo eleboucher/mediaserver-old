@@ -3,6 +3,7 @@
   "extends": ["config:best-practices"],
   "timezone": "Europe/Paris",
   "labels": ["dependencies"],
+  "platformAutomerge": true,
   "customManagers": [
     {
       "customType": "regex",
