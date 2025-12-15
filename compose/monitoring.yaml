@@ -23,7 +23,7 @@ services:
       - "traefik.http.services.beszel.loadbalancer.server.port=8090"
 
   beszel-agent:
-    image: henrygd/beszel-agent-intel:0.16@sha256:d2bf8e5e62e27c47bcda85882eee438c64abbee1cb359418d1fba4c9c67f1af8
+    image: henrygd/beszel-agent-intel:0.17@sha256:ed944888731daae9d12c9daaac270745832f13a7eb1ac17b77215a5415190b35
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
