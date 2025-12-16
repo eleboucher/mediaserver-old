@@ -101,7 +101,7 @@ services:
     expose:
       - 8080
   alloy:
-    image: grafana/alloy:v1.12.0
+    image: grafana/alloy:v1.12.1
     pid: host
     hostname: ${HOSTNAME:-homelab}
     environment:
