@@ -6,7 +6,7 @@
     ":label(renovate)",
     ":semanticPrefixFix",
     ":separateMultipleMajorReleases",
-    ":automergeBranch",
+    ":automergePr",
     ":automergeStableNonMajor",
     ":automergeDigest",
     ":skipStatusChecks"
