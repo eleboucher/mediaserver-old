@@ -105,7 +105,7 @@ services:
     network_mode: "service:gluetun"
 
   qui:
-    image: ghcr.io/autobrr/qui:latest
+    image: ghcr.io/autobrr/qui:v1.10.0
     container_name: qui
     restart: unless-stopped
     environment:
@@ -126,7 +126,7 @@ services:
       - "traefik.http.services.qui.loadbalancer.server.port=7476"
 
   gluetun-qbittorrent-port-manager:
-    image: snoringdragon/gluetun-qbittorrent-port-manager:latest
+    image: snoringdragon/gluetun-qbittorrent-port-manager:1.3
     restart: unless-stopped
     volumes:
       - tmp_qbittorrent_data:/tmp/gluetun
