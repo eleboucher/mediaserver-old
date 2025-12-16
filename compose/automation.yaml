@@ -2,7 +2,7 @@
 
 services:
   renovate:
-    image: ghcr.io/renovatebot/renovate:42.58.0@sha256:9e659e36d518d26cb29cee775968e4caee01bddb1ce913d4a89450cc484d2c38
+    image: ghcr.io/renovatebot/renovate:42.58.2@sha256:c4e64e77257c13e4633e93e8f16458ccbb5eae4063fd3be5609cff33484b61d8
     container_name: renovate
     profiles:
       - "renovate"
