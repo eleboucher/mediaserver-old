@@ -15,3 +15,19 @@ services:
       - RENOVATE_CONFIG_FILE=/opt/renovate/config.js
       - RENOVATE_TOKEN=${RENOVATE_TOKEN}
       - RENOVATE_REPOSITORIES=${RENOVATE_REPOSITORIES}
+  diun:
+    image: crazymax/diun:4.30.0
+    container_name: diun
+    command: serve
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/diun:/data
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+        TZ: Europe/Paris
+        DIUN_WATCH_WORKERS: 20
+        DIUN_WATCH_SCHEDULE: "0 */6 * * *"
+        DIUN_WATCH_JITTER: 30s
+        DIUN_PROVIDERS_DOCKER: "true"
+        DIUN_NOTIF_DISCORD_WEBHOOKURL: ${DISCORD_WEBHOOK}
+        DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: "true"
+    restart: always
