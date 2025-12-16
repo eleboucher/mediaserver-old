@@ -11,8 +11,7 @@ services:
     networks:
       yams_network:
     environment:
-      - LOG_LEVEL=info
+      - LOG_LEVEL=debug
       - RENOVATE_CONFIG_FILE=/opt/renovate/config.js
       - RENOVATE_TOKEN=${RENOVATE_TOKEN}
       - RENOVATE_REPOSITORIES=${RENOVATE_REPOSITORIES}
-      - RENOVATE_GIT_AUTHOR=${RENOVATE_GIT_AUTHOR}
