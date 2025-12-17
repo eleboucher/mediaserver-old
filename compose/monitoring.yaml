@@ -52,6 +52,8 @@ services:
     image: louislam/uptime-kuma:2.0.2
     container_name: uptime-kuma
     restart: always
+    ports:
+      - "3001:3001"
     networks:
       - yams_network
     volumes:
