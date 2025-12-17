@@ -138,3 +138,22 @@ services:
       QBITTORRENT_PASS: ${QBIT_PASSWORD} # password
       PORT_FORWARDED: /tmp/gluetun/forwarded_port
       HTTP_S: http
+
+  autobrr:
+    container_name: autobrr
+    image: ghcr.io/autobrr/autobrr:v1.71.0
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    networks:
+      yams_network:
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/autobrr:/config
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.autobrr.rule=Host(`autobrr.erwanleboucher.dev`)"
+      - "traefik.http.routers.autobrr.entrypoints=websecure"
+      - "traefik.http.routers.autobrr.tls.certresolver=myresolver"
+      - "traefik.http.services.autobrr.loadbalancer.server.port=7474"
