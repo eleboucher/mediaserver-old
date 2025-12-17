@@ -108,6 +108,8 @@ services:
     image: ghcr.io/autobrr/qui:v1.10.0
     container_name: qui
     restart: unless-stopped
+    volumes:
+      - ${INSTALL_DIRECTORY}/config/qui:/config
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
