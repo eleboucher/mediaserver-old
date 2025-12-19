@@ -105,7 +105,7 @@ services:
     network_mode: "service:gluetun"
 
   qui:
-    image: ghcr.io/autobrr/qui:v1.10.0
+    image: ghcr.io/autobrr/qui:v1.11.0
     container_name: qui
     restart: unless-stopped
     volumes:
