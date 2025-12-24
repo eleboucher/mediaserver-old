@@ -16,7 +16,7 @@ services:
       - RENOVATE_TOKEN=${RENOVATE_TOKEN}
       - RENOVATE_REPOSITORIES=${RENOVATE_REPOSITORIES}
   diun:
-    image: crazymax/diun:4.30.0
+    image: crazymax/diun:4.31.0
     container_name: diun
     command: serve
     volumes:
